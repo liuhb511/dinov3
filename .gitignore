@@ -1,0 +1,33 @@
+# 数据 & 模型
+dataset/
+checkpoints/
+logs/
+output/
+output1/
+onnx/
+old/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/
+
+# 临时文件
+_*.py
+*.tmp

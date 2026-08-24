@@ -1,0 +1,46 @@
+数据集处理流程
+
+1.  初始数据
+    一个文件夹，里面包含所有图片和与图片同名的标注文件JSON
+
+2.  检查标签名称（可选）
+    脚本文件    ：  tools\statistics_labelme.py
+    参数        ：  json_directory      -------   Labelme json所在目录
+                    output_log          -------   输出统计日志
+    用途        ：  检查数据集标签名称是否标准，如果存在异常标签，需制定规则修改
+
+3.  修复错误标记形状
+    脚本文件    ：  tools\fix_polygon_to_circle.py
+    参数        ：  JSON_DIR            --------    Labelme JSON 文件所在目录
+                    DRY_RUN             --------    是否启用预演模式，建议首次开启
+                    LOG_DIR             --------    日志输出目录
+    用途        ：  批量修复标记的形状，将只有两点的多边形（polygon）改成圆形（circle）
+
+4.  裁剪图像尺寸
+    脚本文件    ：  tools\smart_crop_labelme_784.py
+    参数        ：  IMAGE_DIR           --------    原图目录
+                    JSON_DIR            --------    原图标注文件目录
+                    OUTPUT_DIR          --------   输出目录
+    输出结构    ：  ./images             --------    裁剪后的图片
+                    ./masks             --------    裁剪后图片所对应的掩码图
+                    ./json              --------    裁剪后图片所对应的标注文件
+                    ./log               --------    裁剪日志
+    用途        ：  Labelme 语义分割数据智能离线裁剪脚本，将原图离线裁剪为固定大小
+
+5.  修改掩码类别
+    脚本文件    ：  tools\Process_ABC_v2.py
+    参数        ：  path                 --------    输入目录，目录下需包含图片和与图片同名的标记文件
+                    savepath            --------    输出目录
+    输出结构    ：  total/JPEGImages     --------   输入的原图
+                    total/SegmentationClass ------  修改后只包含指定类别的掩码图
+    用途        ：  原始JSON包含所有类别的标记文件，但是在实际的训练中，可能要将数据分类训练；
+                    此脚本用于将所需要的类别重新映射类别编号，而其他类别映射成背景（0）。
+
+6.  划分数据集
+    脚本文件    ：  split_dataset.py
+    参数        ：  images_dir           -------     图片所在路径，一般是5中的total/JPEGImages
+                    masks_dir            -------     掩码图所在路径，一般是5中的total/SegmentationClass
+                    output_dir           -------     输出目录
+    输出结构    ：  total/train           -------     训练集，里面包含images和masks
+                    total/val            ------      验证集，里面包含images和masks
+    用途        ：  划分训练集和验证集

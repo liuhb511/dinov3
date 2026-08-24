@@ -1,0 +1,28 @@
+                    V0 (train.py)     V1 (train_JZW)      V2 (train_JZW_D)    V3 (train_JZW_D_EMA)
+                    ────────────      ──────────────      ───────────────     ───────────────────
+                    基础模型           loss+全分类         loss+D分类           EWA+全分类
+重要修改                               无旋转              无旋转，只D          添加EMA
+Config              config.py         config.py           config_D.py         config_D_EMA.py
+Dataset             ABCD              ABCD                D_V2(裁剪)           ABCD
+Loss                loss.py           loss_JZW.py         loss_JZW.py         loss_JZW_EMA.py
+Metric              metric.py         metric_JZW.py       metric_JZW.py       metric_JZM.py
+特殊机制              —                 —                  —                   EMA Teacher
+输出路径                               checkpoints\BG_HQL_JZW_ABCD_norotate
+                                                          checkpoints\BG_HQL_JZW_D_norotate
+                                                                                checkpoints\BG_HQL_JZW_ABCD_EMA
+Epochs              100                 200                 100                 100
+
+
+
+----------------------------------------
+2026年7月20日
+1.训练EMA_ABCD模型
+python train_JZW_ABCD_EMA.py
+2.训练D模型
+python train_JZW_D.py
+----------------------------------------
+
+python train_new.py
+
+python train_EMA.py
+
