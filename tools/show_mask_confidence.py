@@ -45,17 +45,17 @@ IMAGE_DIR = Path(
     # r"F:/liuhaibo/datasets/LG_JZW/20260709152249-200X-B1"                                     # 莱钢2 测试集原图
     # r"output/overlay_results/HQL/test_HQL_ABC_confidence"                                     # 莱钢2 测试集原图
 
-    r"output/overlay_results/HQL/HQL_0810/ABC_3-2_confidence"                                               # 哈汽轮 测试集原图
-    # r"F:/liuhaibo/datasets/test/HQL_JZW_0810/3"                                               # 哈汽轮 测试集原图
+    # r"F:/liuhaibo/datasets/test/JZW/HQL_0825/1"                                               # 哈汽轮 测试集原图
+    r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output/1_D_overlay_conf"                                               # 哈汽轮 测试集原图
 )
 
 
 # 单通道类别索引 Mask 目录 —— 推理
-MASK_DIR = Path(r"output/infer_HQL/HQL_0810/D_3_confidence/")  # 哈汽轮 测试集融合掩码
+MASK_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output/1_ABC_conf/")  # 哈汽轮 测试集融合掩码
 
 # 输出目录
 # OUTPUT_DIR = Path(r"output/overlay_results/HQL/HQL_0810/1_confidence_1/")  # 哈汽轮 测试集叠加结果
-OUTPUT_DIR = Path(r"output/overlay_results/HQL/HQL_0810/3-2_confidence/")  # 哈汽轮 测试集叠加结果
+OUTPUT_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output/1_ABC_overlay_conf/")  # 哈汽轮 测试集叠加结果
 
 
 # ============================================================
@@ -64,7 +64,7 @@ OUTPUT_DIR = Path(r"output/overlay_results/HQL/HQL_0810/3-2_confidence/")  # 哈
 
 # 前景类别数量，不包含背景类别0
 # ABC：6， D：3， TIND：4， ABC+TINBC：8, ABCD+TINBCD：11
-NUM_CLASSES = 3
+NUM_CLASSES = 6
 
 # 类别编号 -> BGR显示颜色
 #
@@ -77,21 +77,21 @@ NUM_CLASSES = 3
 # 类别数量必须与这里配置的颜色数量一致。
 CLASS_COLORS: Dict[int, Tuple[int, int, int]] = {
 
-    # 1:  (255, 0,   0),      # A           蓝
-    # 2:  (0,   255, 0),      # B           绿
-    # 3:  (0,   0,   255),    # C           红
-    # 4:  (255, 0,   255),    # D           紫红
-    # 5:  (255, 255, 0),      # TIN-B/TIN-C 青
-    # 6:  (0,   165, 255),    # TIN-D       橙
+    1:  (255, 0,   0),      # A           蓝
+    2:  (0,   255, 0),      # B           绿
+    3:  (0,   0,   255),    # C           红
+    4:  (255, 0,   255),    # D           紫红
+    5:  (255, 255, 0),      # TIN-B/TIN-C 青
+    6:  (0,   165, 255),    # TIN-D       橙
     # 7:  (203, 192, 255),    # HH          粉
     # 8:  (144, 238, 144),    # XW          浅绿
     # 9:  (0,   255, 255),    # XQL         黄
     # 10: (128, 0,   128),    # HC          深紫
     # 11: (255, 191, 0),      # SZ          深青蓝
 
-    1: (155, 0, 128),
-    2: (255, 0, 128),
-    3: (155, 255, 128),
+    # 1: (155, 0, 128),
+    # 2: (255, 0, 128),
+    # 3: (155, 255, 128),
 
     # 4: (0, 255, 255),
     # 5: (255, 255, 0),
@@ -103,17 +103,17 @@ CLASS_COLORS: Dict[int, Tuple[int, int, int]] = {
 # 类别编号 -> 显示名称
 # 数量和类别编号必须与 CLASS_COLORS 保持一致。
 CLASS_NAMES: Dict[int, str] = {
-    1: "D",
-    2: "HC",
-    3: "SZ",
+    # 1: "D",
+    # 2: "HC",
+    # 3: "SZ",
     # 4: "TIN-D",
 
-    # 1: "A",
-    # 2: "B",
-    # 3: "C",
-    # 4: "HH",
-    # 5: "XW",
-    # 6: "XQL",
+    1: "A",
+    2: "B",
+    3: "C",
+    4: "HH",
+    5: "XW",
+    6: "XQL",
     # 7: "TIN-B/TIN-C",
     # 8: "TIN-D",
 

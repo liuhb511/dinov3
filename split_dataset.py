@@ -9,11 +9,11 @@ from pathlib import Path
 # ==========================================================
 
 # 原始数据路径
-images_dir = r"F:/liuhaibo/datasets/JZW_v3/ABCTIN_1024/JPEGImages"
-masks_dir = r"F:/liuhaibo/datasets/JZW_v3/ABCTIN_1024/SegmentationClass"
+images_dir = r"F:/liuhaibo/datasets/HMS/hongmoshui_images/"
+masks_dir = r"F:/liuhaibo/datasets/HMS/hongmoshui_masks/"
 
 # 输出数据集路径
-output_dir = r"F:/liuhaibo/datasets/JZW_v3/ABCTIN_1024"
+output_dir = r"F:/liuhaibo/datasets/HMS/"
 
 
 # 数据划分比例

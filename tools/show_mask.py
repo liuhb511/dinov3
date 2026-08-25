@@ -42,16 +42,16 @@ IMAGE_DIR = Path(
     # r"F:/liuhaibo/datasets/LG_JZW/LG_test"                                                  # 莱钢2 测试集原图
 
     # r"F:/liuhaibo/datasets/test/JZW/LG_JZW_0807/20260701110436"
-    r"F:/liuhaibo/datasets/test/JZW/gray/3571/color"
+    r"F:/liuhaibo/datasets/test/JZW/HQL_0825/1/"
 )
 
 
 # 单通道类别索引 Mask 目录 —— 推理
-MASK_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/gray/3571/masks_merge_color/")  # 哈汽轮 测试集融合掩码
+MASK_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output_unet/masks_merge/")  # 哈汽轮 测试集融合掩码
 # MASK_DIR = Path(r"output/infer_LG/merge/20260701110436_784/")  # 哈汽轮 测试集融合掩码
 
 # 输出目录
-OUTPUT_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/gray/3571/overlay_color/")  # 哈汽轮 测试集叠加结果
+OUTPUT_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output_unet/1_overlay/")  # 哈汽轮 测试集叠加结果
 
 
 # ============================================================
@@ -136,14 +136,19 @@ CLASS_NAMES: Dict[int, str] = {
     10: "HC",
     11: "SZ",
 
+    # 1: "hd_w",
+    # 2: "hd_y",
+    # 3: "hd_t",
+    # 4: "red",
+
 }
 
 # 需要在结果中显示的类别编号。
 # 只需修改这个集合；未列出的类别不会叠加颜色，也不会绘制轮廓和标签。
-# 当前示例：显示 A、B、C、D 和 XQL。
+# 当前示例：显示 A、B、C、D 和 TIN。
 DISPLAY_CLASS_IDS = {1, 2, 3, 4, 5, 6}
 
-# 轮廓与标签显示配置
+# 轮廓与标签显示配置``
 DRAW_CONTOURS = True
 CONTOUR_THICKNESS = 0
 MIN_COMPONENT_AREA = 2
@@ -172,7 +177,7 @@ ALPHA = 0.40
 #
 # "side_by_side"
 #   左侧为原图，右侧为半透明叠加图。
-OUTPUT_MODE = "overlay"
+OUTPUT_MODE = "side_by_side"
 
 
 # ============================================================

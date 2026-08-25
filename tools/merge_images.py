@@ -8,17 +8,17 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 # 左侧图片文件夹
 # LEFT_FOLDER = Path(r"F:/liuhaibo/datasets/test/HQL_JZW_0810/4")
-LEFT_FOLDER = Path(r"F:\liuhaibo\datasets\output\unet\LG_JZW_0807\20260703151744\overlay_single_unet/")
+LEFT_FOLDER = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/1/")
 
 # 右侧图片文件夹
-RIGHT_FOLDER = Path(r"F:\liuhaibo\datasets\output\unet\LG_JZW_0807\20260703151744\overlay_single_dino/")
+RIGHT_FOLDER = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output/1_ABC_overlay_conf/")
 
 # 拼接结果输出文件夹
-OUTPUT_FOLDER = Path(r"F:\liuhaibo\datasets\output\unet\LG_JZW_0807\20260703151744\/images_merge")
+OUTPUT_FOLDER = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output/1_merge")
 
 # 左右图片标签
-LEFT_LABEL = "gray"
-RIGHT_LABEL = "color"
+LEFT_LABEL = "image"
+RIGHT_LABEL = "infer"
 
 # 字体文件。Windows 可使用：
 # C:\Windows\Fonts\times.ttf
