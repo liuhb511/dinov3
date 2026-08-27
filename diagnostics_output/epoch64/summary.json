@@ -1,0 +1,156 @@
+{
+  "checkpoint_tag": "epoch64",
+  "checkpoint_path": "./checkpoints/inclusion_v2_mvp1/best_inclusion_f1.pth",
+  "checkpoint_epoch": 63,
+  "num_images": 992,
+  "pixel_inclusion": {
+    "precision": 0.8311733249903042,
+    "recall": 0.7651596228283274,
+    "f1": 0.7968015303118398,
+    "tp_px": 1729488,
+    "fp_px": 351291,
+    "fn_px": 530809
+  },
+  "tind_pixel_chain": {
+    "gt_tind_pixels": 117762,
+    "gate_strip_pixel_recall": 0.7724308350741326,
+    "strip_expert_tind_pixel_recall": 0.6806694859122637,
+    "final_tind_pixel_recall": 0.662361372938639
+  },
+  "tind_object_chain": {
+    "count": 819,
+    "gate_strip_object_recall": 0.818070818070818,
+    "strip_expert_tind_object_recall": 0.7106227106227107,
+    "final_tind_object_recall": 0.7008547008547008,
+    "mean_gate_strip_coverage": 0.694073473139025,
+    "mean_strip_expert_tind_coverage": 0.5958254925492894,
+    "mean_final_tind_coverage": 0.5792797872103591
+  },
+  "d_object_recall_by_size": {
+    "small_<=5um": {
+      "count": 737,
+      "detected": 466,
+      "object_recall": 0.6322930800542741,
+      "mean_class_coverage": 0.5199265463466968
+    },
+    "medium_5-10um": {
+      "count": 405,
+      "detected": 307,
+      "object_recall": 0.7580246913580246,
+      "mean_class_coverage": 0.6695757967982746
+    },
+    "large_>10um": {
+      "count": 34,
+      "detected": 29,
+      "object_recall": 0.8529411764705882,
+      "mean_class_coverage": 0.7284747986481873
+    }
+  },
+  "object_metrics_by_class": {
+    "A": {
+      "count": 1355,
+      "mean_coverage": 0.7471541516677146,
+      "mean_purity": 0.7526481050968081,
+      "mean_correct_class_coverage": 0.7380938546249721,
+      "mean_dominant_ratio": 0.9250291301426579,
+      "mean_correct_class_ratio": 0.9151871585165237,
+      "pct_consistency_lt_0_8": 0.07896678966789668,
+      "pct_multi_class_fragment": 0.016236162361623615
+    },
+    "B": {
+      "count": 117,
+      "mean_coverage": 0.7146828340909099,
+      "mean_purity": 0.8171061957522299,
+      "mean_correct_class_coverage": 0.5648594150785725,
+      "mean_dominant_ratio": 0.9148940130133927,
+      "mean_correct_class_ratio": 0.7470314852948882,
+      "pct_consistency_lt_0_8": 0.13675213675213677,
+      "pct_multi_class_fragment": 0.17094017094017094
+    },
+    "C": {
+      "count": 442,
+      "mean_coverage": 0.7722145727117917,
+      "mean_purity": 0.7519749999997618,
+      "mean_correct_class_coverage": 0.6380563869241492,
+      "mean_dominant_ratio": 0.9077324505312742,
+      "mean_correct_class_ratio": 0.7559685151936824,
+      "pct_consistency_lt_0_8": 0.1244343891402715,
+      "pct_multi_class_fragment": 0.07918552036199095
+    },
+    "D": {
+      "count": 1176,
+      "mean_coverage": 0.5856550292465897,
+      "mean_purity": 0.626361830344147,
+      "mean_correct_class_coverage": 0.5774933720364414,
+      "mean_dominant_ratio": 0.7230618828327584,
+      "mean_correct_class_ratio": 0.7125552211516925,
+      "pct_consistency_lt_0_8": 0.2780612244897959,
+      "pct_multi_class_fragment": 0.0017006802721088435
+    },
+    "TINB/TINC": {
+      "count": 226,
+      "mean_coverage": 0.5942587941416608,
+      "mean_purity": 0.8241072102408373,
+      "mean_correct_class_coverage": 0.4971791450582747,
+      "mean_dominant_ratio": 0.9111761601877696,
+      "mean_correct_class_ratio": 0.7560267463118011,
+      "pct_consistency_lt_0_8": 0.11061946902654868,
+      "pct_multi_class_fragment": 0.19911504424778761
+    },
+    "TIND": {
+      "count": 819,
+      "mean_coverage": 0.6906292647739967,
+      "mean_purity": 0.6399762747918031,
+      "mean_correct_class_coverage": 0.5792797872103591,
+      "mean_dominant_ratio": 0.8305142919907363,
+      "mean_correct_class_ratio": 0.7141262694052719,
+      "pct_consistency_lt_0_8": 0.1807081807081807,
+      "pct_multi_class_fragment": 0.0463980463980464
+    }
+  },
+  "directional_errors": {
+    "HH_to_A_or_C": {
+      "rate": 0.0015378155384808345,
+      "error_px": 564,
+      "gt_px": 366754
+    },
+    "HC_to_D": {
+      "rate": 0.006979052262478389,
+      "error_px": 3298,
+      "gt_px": 472557
+    },
+    "SZ_to_D": {
+      "rate": 0.015468368687816782,
+      "error_px": 412,
+      "gt_px": 26635
+    },
+    "BG_to_strip_inclusion_apparent": {
+      "rate": 0.000315398594777024,
+      "error_px": 326929,
+      "gt_bg_px": 1036558201
+    },
+    "BG_to_D_apparent": {
+      "rate": 1.2223143850269918e-05,
+      "error_px": 12670,
+      "gt_bg_px": 1036558201
+    }
+  },
+  "apparent_fp_components": {
+    "bg_to_strip_inclusion": {
+      "component_count": 9271,
+      "total_area_px": 324050,
+      "mean_area_px": 34.953079495200086,
+      "max_area_px": 2706
+    },
+    "bg_to_D": {
+      "component_count": 1094,
+      "total_area_px": 11807,
+      "mean_area_px": 10.792504570383912,
+      "max_area_px": 393
+    }
+  },
+  "notes": [
+    "Object 指标基于 semantic mask connected components。",
+    "背景存在漏标时，BG->inclusion 是 apparent FP 上界，不等于真实 FP。"
+  ]
+}
