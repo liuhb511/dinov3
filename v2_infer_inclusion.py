@@ -24,7 +24,7 @@ from types import SimpleNamespace
 # ╚══════════════════════════════════════════════════════════════╝
 INFER = {
     # ========== 测试数据 ==========
-    "test_image_dir": "F:/liuhaibo/datasets/test/JZW/HQL_0825/1",   # 改为你的测试图目录
+    "test_image_dir": "F:/liuhaibo/datasets/test/JZW/DHTG/total",   # 改为你的测试图目录
 
     # ========== 模型 ==========
     "backbone_name":   "dinov3_model",
@@ -44,8 +44,9 @@ INFER = {
     "confidence_threshold": 0.0,        # 最大类别概率低于该值置背景0
 
     # ========== 输出 ==========
-    "output_dir":       "./output/infer_inclusion_v2",
-    "output_subdir":    "mask",
+    "output_dir":       "F:/liuhaibo/datasets/output/DHTG/",
+    # "output_dir":       "F:/liuhaibo/datasets/test/JZW/HQL_0825/compare/",
+    "output_subdir":    "JZW",
     "save_confidence":  False,          # 是否保存置信度图
 
     # ========== 设备 / 性能统计 ==========

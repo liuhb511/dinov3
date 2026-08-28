@@ -23,7 +23,7 @@ from types import SimpleNamespace
 # ╚══════════════════════════════════════════════════════════════╝
 TRAIN = {
     # ========== 数据集 ==========
-    "dataset_root":    "F:/liuhaibo/datasets/HMS",     # 根目录，自动拼接子路径
+    "dataset_root":    "F:/liuhaibo/datasets/HMS/hongmoshui_crops",     # 根目录，自动拼接子路径
     # "dataset_root":    "F:/liuhaibo/DINOv3-CARNet-Doo-main/dataset/BG_HQL_JZW_ABC_V2",     # 根目录，自动拼接子路径
 
     # ========== 模型结构（必须与预训练/checkpoint一致）==========
@@ -56,8 +56,8 @@ TRAIN = {
     "boundary_weight": 0.2,             # Boundary Head 默认不启用
 
     # ========== 保存 / 日志 ==========
-    "save_dir":        "./checkpoints/HMS",
-    "log_dir":         "./logs/HMS",
+    "save_dir":        "./checkpoints/HMS_v2",
+    "log_dir":         "./logs/HMS_v2",
     "resume":          "",            # 断点续训 checkpoint 路径，空=不续训
     "save_best_iou":   True,
     "save_best_dice":  True,

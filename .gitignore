@@ -31,3 +31,6 @@ Thumbs.db
 # 临时文件
 _*.py
 *.tmp
+
+fp_crops
+hard_negative_mining*/

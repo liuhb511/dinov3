@@ -40,17 +40,17 @@ INFER = {
 
 
     # "test_image_dir": "F:/liuhaibo/datasets/test/JZW/DHTG/total",   #  东海特钢 测试集
-    "test_image_dir": "F:/liuhaibo/datasets/test/JZW/HQL_0825/1",   #  莱钢 测试集
-    # "test_image_dir": "F:/liuhaibo/datasets/test/HMS/hongmoshui_test", 
+    # "test_image_dir": "F:/liuhaibo/datasets/test/JZW/HQL_0825/1",   #  莱钢 测试集
+    "test_image_dir": "F:/liuhaibo/datasets/test/HMS/test_images", 
 
 
     # ========== 模型结构（必须与训练时一致）==========
     "backbone_name":   "dinov3_model",
     "freeze_backbone": True,
-    "num_classes":     4,            # 4(D类) / 5(ABCD) / 7(ABC) / 5(D+TIN-D) / 9(ABC+TIN-B+TIN-C) / 9(ABC+TIN)
+    "num_classes":     5,            # 4(D类) / 5(ABCD) / 7(ABC) / 5(D+TIN-D) / 9(ABC+TIN-B+TIN-C) / 9(ABC+TIN)
 
     # ========== 权重加载 ==========
-    "checkpoint_dir":  "./checkpoints/D_1024_v2",             # 点状（D）类    
+    "checkpoint_dir":  "./checkpoints/HMS_v2",             # 点状（D）类    
     # "checkpoint_dir":  "./checkpoints/ABCTIN1024",                # 条状（ABC + 氮化钛）
     # "checkpoint_dir":  "./checkpoints/ABCTIN1024_gray",          
     "checkpoint_name": "best_iou",                              # best_iou / best_dice / last / 完整路径
@@ -61,17 +61,18 @@ INFER = {
     # stride = 0 → 自适应均匀分布（窗口有重叠，首尾贴边）
     "crop_size":         1024,                                   # 滑动窗口大小
     "stride":            0,                                     # 0=自适应模式, >0=固定步长
-    "confidence_threshold": 0.1,                                # 最大类别概率低于该值时设为背景0
+    "confidence_threshold": 0.0,                                # 最大类别概率低于该值时设为背景0
 
     # ========== 输出 ==========
     # "output_dir":     "./output/infer_BG",                    # 宝钢 输出路径
     # "output_dir":     "./output/infer_DHTG/DHTG16",                     # 哈汽轮 输出路径
     # "output_dir":     "./output/infer_LG/436_gray",                    # 莱钢 输出路径
     # "output_dir":     "./output/infer_HQL",                    # 莱钢 输出路径
+    "output_dir":     "./output/infer_HMS",                    # 莱钢 输出路径
     
-    "output_dir":     "F:/liuhaibo/datasets/test/JZW/HQL_0825/output_dino",                    # 莱钢 输出路径
+    # "output_dir":     "F:/liuhaibo/datasets/test/JZW/HQL_0825/output_dino",                    # 莱钢 输出路径
 
-    "output_subdir":  "mask_D",                   # 输出子路径
+    "output_subdir":  "HMS_v2",                   # 输出子路径
     "save_confidence": False,                                                # 是否保存置信度图
 
     # ========== 设备 / 性能统计 ==========

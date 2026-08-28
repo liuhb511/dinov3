@@ -28,16 +28,16 @@ from types import SimpleNamespace
 # ╚══════════════════════════════════════════════════════════════╝
 INFER = {
     # ========== 测试数据 ==========
-    "test_image_dir": "F:/liuhaibo/datasets/test/JZW/LG_JZW_0807/20260706152853",
+    "test_image_dir": "F:/liuhaibo/datasets/test/JZW/HQL_0825/1",
 
     # ========== 条状模型（模型1，9类：A/B/C/HH/XW/XQL/TIN-B/TIN-C/TIN-D）==========
-    "strip_checkpoint_dir":  "./checkpoints/ABCTIN1024",
-    "strip_checkpoint_name": "ABCTIN_1024_slim",                    # best_iou / best_dice / last / 完整路径
+    "strip_checkpoint_dir":  "./checkpoints/ABCTIN_1024_v2",
+    "strip_checkpoint_name": "ABCTIN_slim",                    # best_iou / best_dice / last / 完整路径
     "strip_num_classes":     9,
 
     # ========== 点状模型（模型2，4类：D/HC/SZ）==========
-    "point_checkpoint_dir":  "./checkpoints/D1024",
-    "point_checkpoint_name": "best_iou",                    # best_iou / best_dice / last / 完整路径
+    "point_checkpoint_dir":  "./checkpoints/D_1024_v2",
+    "point_checkpoint_name": "DDS_slim",                    # best_iou / best_dice / last / 完整路径
     "point_num_classes":     4,
 
     # ========== 模型结构（两个模型共用，必须与训练时一致）==========
@@ -51,9 +51,10 @@ INFER = {
     "confidence_threshold": 0.1,                            # 最大类别概率低于该值时设为背景0
 
     # ========== 输出 ==========
-    "output_dir": "F:/liuhaibo/datasets/output/LG/LG_JZW_0807/20260706152853",
-    "save_intermediate_masks": True,                        # 是否顺带保存 mask_strip/mask_point/mask_merged
-    "output_mode": "side_by_side",                          # side_by_side(原图|叠加) / overlay(仅叠加)
+    # "output_dir": "F:/liuhaibo/compare/overlay/old",
+    "output_dir": "F:/liuhaibo/datasets/test/JZW/HQL_0825/compare/old",
+    "save_intermediate_masks": False,                        # 是否顺带保存 mask_strip/mask_point/mask_merged
+    "output_mode": "overlay",                          # side_by_side(原图|叠加) / overlay(仅叠加)
 
     # ========== 展示配置 ==========
     "num_classes_final":    11,                             # 融合后总类别数（含背景0）

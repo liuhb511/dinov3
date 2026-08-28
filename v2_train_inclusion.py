@@ -26,7 +26,7 @@ from types import SimpleNamespace
 # ╚══════════════════════════════════════════════════════════════╝
 TRAIN = {
     # ========== 数据集（用户提供全类别 mask，train/val 已划分）==========
-    "dataset_root":    "F:/liuhaibo/datasets/JZW_v3/inclusion_unified",  # 改为你的数据根目录
+    "dataset_root":    "F:/liuhaibo/datasets/JZW_v3/JZW_ALL/total",  # 改为你的数据根目录
 
     # ========== 模型结构 ==========
     "backbone_name":   "dinov3_model",

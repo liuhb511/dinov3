@@ -41,17 +41,17 @@ IMAGE_DIR = Path(
     # r"F:/liuhaibo/datasets/BG_HQL_JZW/test_BG"                                              #  宝钢 测试集原图
     # r"F:/liuhaibo/datasets/LG_JZW/LG_test"                                                  # 莱钢2 测试集原图
 
-    # r"F:/liuhaibo/datasets/test/JZW/LG_JZW_0807/20260701110436"
-    r"F:/liuhaibo/datasets/test/JZW/HQL_0825/1/"
+    r"F:/liuhaibo/datasets/test/HMS/test_images"
+    # r"F:/liuhaibo/datasets/test/JZW/HQL_0825/1/"
 )
 
 
 # 单通道类别索引 Mask 目录 —— 推理
-MASK_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output_unet/masks_merge/")  # 哈汽轮 测试集融合掩码
-# MASK_DIR = Path(r"output/infer_LG/merge/20260701110436_784/")  # 哈汽轮 测试集融合掩码
+# MASK_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/compare/new/")  # 哈汽轮 测试集融合掩码
+MASK_DIR = Path(r"output/infer_HMS/HMS_v2/")  # 哈汽轮 测试集融合掩码
 
 # 输出目录
-OUTPUT_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output_unet/1_overlay/")  # 哈汽轮 测试集叠加结果
+OUTPUT_DIR = Path(r"output/overlay_results/HMS/HMS_v2/")  # 哈汽轮 测试集叠加结果
 
 
 # ============================================================
@@ -60,7 +60,7 @@ OUTPUT_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/output_unet/1_overlay
 
 # 前景类别数量，不包含背景类别0
 # ABC：6， D：3， TIND：4， ABC+TINBC：8, ABCD+TINBCD：11
-NUM_CLASSES = 11
+NUM_CLASSES = 4
 
 # 类别编号 -> BGR显示颜色
 #
@@ -77,13 +77,13 @@ CLASS_COLORS: Dict[int, Tuple[int, int, int]] = {
     2:  (0,   255, 0),      # B           绿
     3:  (0,   0,   255),    # C           红
     4:  (255, 0,   255),    # D           紫红
-    5:  (255, 255, 0),      # TIN-B/TIN-C 青
-    6:  (0,   165, 255),    # TIN-D       橙
-    7:  (203, 192, 255),    # HH          粉
-    8:  (144, 238, 144),    # XW          浅绿
-    9:  (0,   255, 255),    # XQL         黄
-    10: (128, 0,   128),    # HC          深紫
-    11: (255, 191, 0),      # SZ          深青蓝
+    # 5:  (255, 255, 0),      # TIN-B/TIN-C 青
+    # 6:  (0,   165, 255),    # TIN-D       橙
+    # 7:  (203, 192, 255),    # HH          粉
+    # 8:  (144, 238, 144),    # XW          浅绿
+    # 9:  (0,   255, 255),    # XQL         黄
+    # 10: (128, 0,   128),    # HC          深紫
+    # 11: (255, 191, 0),      # SZ          深青蓝
 
     # 1: (155, 0, 128),
     # 2: (255, 0, 128),
@@ -124,29 +124,29 @@ CLASS_NAMES: Dict[int, str] = {
     # 9: "SZ",
 
     
-    1: "A",
-    2: "B",
-    3: "C",
-    4: "D",
-    5: "TIN-B/TIN-C",
-    6: "TIN-D",
-    7: "HH",
-    8: "XW",
-    9: "XQL",
-    10: "HC",
-    11: "SZ",
+    # 1: "A",
+    # 2: "B",
+    # 3: "C",
+    # 4: "D",
+    # 5: "TIN-B/TIN-C",
+    # 6: "TIN-D",
+    # 7: "HH",
+    # 8: "XW",
+    # 9: "XQL",
+    # 10: "HC",
+    # 11: "SZ",
 
-    # 1: "hd_w",
-    # 2: "hd_y",
-    # 3: "hd_t",
-    # 4: "red",
+    1: "hd_w",
+    2: "hd_y",
+    3: "hd_t",
+    4: "red",
 
 }
 
 # 需要在结果中显示的类别编号。
 # 只需修改这个集合；未列出的类别不会叠加颜色，也不会绘制轮廓和标签。
 # 当前示例：显示 A、B、C、D 和 TIN。
-DISPLAY_CLASS_IDS = {1, 2, 3, 4, 5, 6}
+DISPLAY_CLASS_IDS = {1, 2, 3, 4}
 
 # 轮廓与标签显示配置``
 DRAW_CONTOURS = True
@@ -177,7 +177,7 @@ ALPHA = 0.40
 #
 # "side_by_side"
 #   左侧为原图，右侧为半透明叠加图。
-OUTPUT_MODE = "side_by_side"
+OUTPUT_MODE = "overlay"
 
 
 # ============================================================
