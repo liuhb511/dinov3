@@ -24,7 +24,7 @@ from types import SimpleNamespace
 # ╚══════════════════════════════════════════════════════════════╝
 INFER = {
     # ========== 测试数据 ==========
-    "test_image_dir": "F:/liuhaibo/datasets/test/JZW/DHTG/total",   # 改为你的测试图目录
+    "test_image_dir": "D:/lhb/datasets/testsets/JZW/LG_JZW_0807_300",   # 改为你的测试图目录
 
     # ========== 模型 ==========
     "backbone_name":   "dinov3_model",
@@ -44,9 +44,9 @@ INFER = {
     "confidence_threshold": 0.0,        # 最大类别概率低于该值置背景0
 
     # ========== 输出 ==========
-    "output_dir":       "F:/liuhaibo/datasets/output/DHTG/",
+    "output_dir":       "output/LG/compare/",
     # "output_dir":       "F:/liuhaibo/datasets/test/JZW/HQL_0825/compare/",
-    "output_subdir":    "JZW",
+    "output_subdir":    "inclusion",
     "save_confidence":  False,          # 是否保存置信度图
 
     # ========== 设备 / 性能统计 ==========
@@ -72,7 +72,7 @@ alpha = INFER["fusion_alpha"]
 # ╔══════════════════════════════════════════════════════════════╗
 # ║                        模块导入                               ║
 # ╚══════════════════════════════════════════════════════════════╝
-from inclusion_v2.models import InclusionDualExpertNet
+from inclusion_v2.models.model import InclusionDualExpertNet
 from inclusion_v2.utils.output_fusion import fuse_outputs
 from inclusion_v2.data.label_mapping import NUM_CLASSES_UNIFIED, INCLUSION_CLASSES
 

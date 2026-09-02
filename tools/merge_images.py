@@ -8,13 +8,13 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 # 左侧图片文件夹
 # LEFT_FOLDER = Path(r"F:/liuhaibo/datasets/test/HQL_JZW_0810/4")
-LEFT_FOLDER = Path(r"F:/liuhaibo/datasets/test/HMS/GT_overlay/")  # 哈汽轮 测试集叠加结果
+LEFT_FOLDER = Path(r"D:/lhb/datasets/testsets/HMS/0199/M1/BGA/")  # 哈汽轮 测试集叠加结果
 
 # 右侧图片文件夹
-RIGHT_FOLDER = Path(r"output/overlay_results/HMS/HMS_v2/")
+RIGHT_FOLDER = Path(r"D:/lhb/dinov3-main/output/overlay_results/HMS/0199_M1")
 
 # 拼接结果输出文件夹
-OUTPUT_FOLDER = Path(r"output/merge/HMS/HMS_v2/")
+OUTPUT_FOLDER = Path(r"output/merge/HMS/0199_M1/")
 
 # 左右图片标签
 LEFT_LABEL = "GT"

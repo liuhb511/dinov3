@@ -28,7 +28,7 @@ from types import SimpleNamespace
 # ╚══════════════════════════════════════════════════════════════╝
 INFER = {
     # ========== 测试数据 ==========
-    "test_image_dir": "F:/liuhaibo/datasets/test/JZW/HQL_0825/1",
+    "test_image_dir": "D:/lhb/datasets/testsets/JZW/HQL_0825/1",
 
     # ========== 条状模型（模型1，9类：A/B/C/HH/XW/XQL/TIN-B/TIN-C/TIN-D）==========
     "strip_checkpoint_dir":  "./checkpoints/ABCTIN_1024_v2",
@@ -52,7 +52,7 @@ INFER = {
 
     # ========== 输出 ==========
     # "output_dir": "F:/liuhaibo/compare/overlay/old",
-    "output_dir": "F:/liuhaibo/datasets/test/JZW/HQL_0825/compare/old",
+    "output_dir": "output/LG/compare/HQL_0825/1",                 # 叠加结果输出目录
     "save_intermediate_masks": False,                        # 是否顺带保存 mask_strip/mask_point/mask_merged
     "output_mode": "overlay",                          # side_by_side(原图|叠加) / overlay(仅叠加)
 

@@ -26,3 +26,9 @@ python train_new.py
 
 python train_EMA.py
 
+
+
+2026/8/21：
+JZW：使用修改后数据集训练夹杂物分割模型，不学习负样本
+JZW_2：在JZW的基础上，修改了dinov3_encoder，
+

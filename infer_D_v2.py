@@ -41,7 +41,7 @@ INFER = {
 
     # "test_image_dir": "F:/liuhaibo/datasets/test/JZW/DHTG/total",   #  东海特钢 测试集
     # "test_image_dir": "F:/liuhaibo/datasets/test/JZW/HQL_0825/1",   #  莱钢 测试集
-    "test_image_dir": "F:/liuhaibo/datasets/test/HMS/test_images", 
+    "test_image_dir": "D:/lhb/datasets/testsets/HMS/0199/M2/BGA", 
 
 
     # ========== 模型结构（必须与训练时一致）==========
@@ -50,7 +50,7 @@ INFER = {
     "num_classes":     5,            # 4(D类) / 5(ABCD) / 7(ABC) / 5(D+TIN-D) / 9(ABC+TIN-B+TIN-C) / 9(ABC+TIN)
 
     # ========== 权重加载 ==========
-    "checkpoint_dir":  "./checkpoints/HMS_v2",             # 点状（D）类    
+    "checkpoint_dir":  "./checkpoints/HMS",             # 点状（D）类    
     # "checkpoint_dir":  "./checkpoints/ABCTIN1024",                # 条状（ABC + 氮化钛）
     # "checkpoint_dir":  "./checkpoints/ABCTIN1024_gray",          
     "checkpoint_name": "best_iou",                              # best_iou / best_dice / last / 完整路径
@@ -72,7 +72,7 @@ INFER = {
     
     # "output_dir":     "F:/liuhaibo/datasets/test/JZW/HQL_0825/output_dino",                    # 莱钢 输出路径
 
-    "output_subdir":  "HMS_v2",                   # 输出子路径
+    "output_subdir":  "0199_M2",                   # 输出子路径
     "save_confidence": False,                                                # 是否保存置信度图
 
     # ========== 设备 / 性能统计 ==========

@@ -57,8 +57,8 @@ print(f"PROJECT_ROOT: {PROJECT_ROOT}")
 # CONFIG：按你本机路径修改
 # ============================================================
 CONFIG = {
-    "train_image_dir": r"F:/liuhaibo/datasets/JZW_v3/JZW_ALL/total/train/images",
-    "train_mask_dir":  r"F:/liuhaibo/datasets/JZW_v3/JZW_ALL/total/train/masks",
+    "train_image_dir": r"D:/lhb/datasets/JZW_v3/JZW_ALL/total/train/images",
+    "train_mask_dir":  r"D:/lhb/datasets/JZW_v3/JZW_ALL/total/train/masks",
 
     # 推荐用当前较激进、容易暴露误检的 checkpoint，例如 epoch64
     "checkpoint": r"./checkpoints/inclusion_v2_mvp1/best_inclusion_f1.pth",

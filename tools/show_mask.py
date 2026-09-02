@@ -41,17 +41,17 @@ IMAGE_DIR = Path(
     # r"F:/liuhaibo/datasets/BG_HQL_JZW/test_BG"                                              #  宝钢 测试集原图
     # r"F:/liuhaibo/datasets/LG_JZW/LG_test"                                                  # 莱钢2 测试集原图
 
-    r"F:/liuhaibo/datasets/test/HMS/test_images"
-    # r"F:/liuhaibo/datasets/test/JZW/HQL_0825/1/"
+    # r"D:/lhb/datasets/testsets/HMS/0199/M2/BGA"
+    r"D:/lhb/datasets/testsets/HMS/test"
 )
 
 
 # 单通道类别索引 Mask 目录 —— 推理
-# MASK_DIR = Path(r"F:/liuhaibo/datasets/test/JZW/HQL_0825/compare/new/")  # 哈汽轮 测试集融合掩码
-MASK_DIR = Path(r"output/infer_HMS/HMS_v2/")  # 哈汽轮 测试集融合掩码
+MASK_DIR = Path(r"D:/lhb/datasets/testsets/HMS/test/mask/")  # 哈汽轮 测试集融合掩码
+# MASK_DIR = Path(r"D:/lhb/dinov3-main/output/infer_HMS/0199_M2/")  # 哈汽轮 测试集融合掩码
 
 # 输出目录
-OUTPUT_DIR = Path(r"output/overlay_results/HMS/HMS_v2/")  # 哈汽轮 测试集叠加结果
+OUTPUT_DIR = Path(r"D:/lhb/datasets/testsets/HMS/test/overlay/")  # 哈汽轮 测试集叠加结果
 
 
 # ============================================================
@@ -177,7 +177,7 @@ ALPHA = 0.40
 #
 # "side_by_side"
 #   左侧为原图，右侧为半透明叠加图。
-OUTPUT_MODE = "overlay"
+OUTPUT_MODE = "side_by_side"
 
 
 # ============================================================
