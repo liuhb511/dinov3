@@ -33,4 +33,6 @@ _*.py
 *.tmp
 
 fp_crops
-hard_negative_mining*/
+hard_negative*/
+saved_predictions
+comparison_output*/

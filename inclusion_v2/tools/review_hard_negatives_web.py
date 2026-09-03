@@ -55,6 +55,16 @@ class Store:
         if not self.rows:
             raise RuntimeError("candidates.csv 为空")
 
+        # 类别完全由当前 CSV 动态决定，不再写死 A/B/C。
+        # 保持 CSV 中首次出现的顺序，便于与挖掘脚本输出一致。
+        self.classes = []
+        seen_classes = set()
+        for row in self.rows:
+            cls = (row.get("pred_class_name", "") or "").strip()
+            if cls and cls not in seen_classes:
+                seen_classes.add(cls)
+                self.classes.append(cls)
+
         for key in ("review_label", "review_name", "review_note"):
             if key not in self.fields:
                 self.fields.append(key)
@@ -93,10 +103,10 @@ class Store:
     def filtered(self, cls="ALL", state="UNREVIEWED", order="AREA_DESC"):
         ids = list(range(len(self.rows)))
 
-        if cls in {"A", "B", "C"}:
+        if cls != "ALL":
             ids = [
                 i for i in ids
-                if self.rows[i].get("pred_class_name") == cls
+                if (self.rows[i].get("pred_class_name", "") or "").strip() == cls
             ]
 
         if state == "UNREVIEWED":
@@ -133,7 +143,7 @@ class Store:
         out.update({name: 0 for name in LABELS.values()})
         out["BY_CLASS"] = {
             key: {"TOTAL": 0, "UNREVIEWED": 0}
-            for key in "ABC"
+            for key in self.classes
         }
 
         for row in self.rows:
@@ -233,6 +243,32 @@ HTML = r'''<!doctype html>
         .n3 { background: #555; color: #fff; }
         .nav { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .small { margin-top: 8px; color: #ccc; font-size: 13px; }
+        .link-btn {
+            padding: 2px 8px; margin-left: 6px; font-size: 13px;
+            border: 1px solid #777; border-radius: 5px; cursor: pointer;
+            background: #333; color: #eee;
+        }
+        .modal {
+            display: none; position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,.92);
+        }
+        .modal-toolbar {
+            position: absolute; left: 12px; right: 12px; top: 10px; z-index: 1002;
+            display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+            padding: 8px 10px; border-radius: 8px;
+            background: rgba(30,30,30,.92); color: #eee;
+        }
+        .modal-stage {
+            position: absolute; left: 0; right: 0; top: 58px; bottom: 0;
+            overflow: hidden; cursor: grab; user-select: none;
+        }
+        .modal-stage.dragging { cursor: grabbing; }
+        #fullImage {
+            position: absolute; left: 50%; top: 50%;
+            transform-origin: center center;
+            max-width: none; max-height: none;
+            will-change: transform; pointer-events: none;
+        }
         @media (max-width: 900px) {
             .imgs { grid-template-columns: 1fr; }
             .act { grid-template-columns: 1fr 1fr; }
@@ -245,7 +281,6 @@ HTML = r'''<!doctype html>
             <label>类别
                 <select id="cls">
                     <option value="ALL">全部</option>
-                    <option>A</option><option>B</option><option>C</option>
                 </select>
             </label>
             <label>状态
@@ -296,8 +331,24 @@ HTML = r'''<!doctype html>
         </div>
     </div>
 
+    <div id="originalModal" class="modal">
+        <div class="modal-toolbar">
+            <b id="fullTitle">原图</b>
+            <span id="zoomText">100%</span>
+            <button onclick="resetOriginalView()">重置</button>
+            <button onclick="closeOriginal()">关闭 Esc</button>
+            <span class="small" style="margin:0">滚轮缩放；按住左键拖动；双击重置</span>
+        </div>
+        <div id="modalStage" class="modal-stage">
+            <img id="fullImage" alt="原图">
+        </div>
+    </div>
+
     <script>
         let ids = [], pos = 0, cur = null;
+        let knownClasses = [];
+        let zoom = 1, panX = 0, panY = 0;
+        let dragging = false, dragStartX = 0, dragStartY = 0, panStartX = 0, panStartY = 0;
         const $ = (x) => document.getElementById(x);
 
         async function api(url, options = {}) {
@@ -324,20 +375,34 @@ HTML = r'''<!doctype html>
             });
             const data = await api('/api/list?' + params);
             ids = data.indices;
+            updateClassSelector(data.classes || Object.keys(data.summary.BY_CLASS || {}));
             if (reset) pos = 0;
             showSummary(data.summary);
             await load();
         }
 
+        function updateClassSelector(classes) {
+            const sel = $('cls');
+            const current = sel.value || 'ALL';
+            const normalized = Array.from(new Set((classes || []).filter(Boolean)));
+            if (JSON.stringify(normalized) === JSON.stringify(knownClasses)) return;
+
+            knownClasses = normalized;
+            sel.innerHTML = '<option value="ALL">全部</option>' +
+                knownClasses.map(cls => `<option value="${esc(cls)}">${esc(cls)}</option>`).join('');
+            sel.value = knownClasses.includes(current) ? current : 'ALL';
+        }
+
         function showSummary(summary) {
-            const byClass = summary.BY_CLASS;
+            const byClass = summary.BY_CLASS || {};
+            const classParts = Object.entries(byClass).map(([cls, stat]) =>
+                `${esc(cls)}：共${stat.TOTAL}/未审${stat.UNREVIEWED}`
+            );
             $('summary').innerHTML =
                 `总候选 ${summary.TOTAL} ｜ 未审核 ${summary.UNREVIEWED} ｜ ` +
                 `确认负样本 ${summary['确认负样本']} ｜ 漏标夹杂物 ${summary['漏标夹杂物']} ｜ ` +
-                `已知干扰物 ${summary['已知干扰物']} ｜ 不确定 ${summary['不确定']} ｜ ` +
-                `A：共${byClass.A.TOTAL}/未审${byClass.A.UNREVIEWED} ｜ ` +
-                `B：共${byClass.B.TOTAL}/未审${byClass.B.UNREVIEWED} ｜ ` +
-                `C：共${byClass.C.TOTAL}/未审${byClass.C.UNREVIEWED}`;
+                `已知干扰物 ${summary['已知干扰物']} ｜ 不确定 ${summary['不确定']}` +
+                (classParts.length ? ' ｜ ' + classParts.join(' ｜ ') : '');
         }
 
         async function load() {
@@ -361,13 +426,96 @@ HTML = r'''<!doctype html>
                 `预测类别=<b>${esc(row.pred_class_name)}</b> ｜ 候选面积=${esc(row.area_px)} px ｜ ` +
                 `外接框=(${esc(row.x)},${esc(row.y)},${esc(row.w)},${esc(row.h)}) ｜ ` +
                 `长宽比=${esc(row.aspect_ratio)}<br>` +
-                `图像：${esc(row.image_name)}<br>` +
+                `图像：${esc(row.image_name)} ` +
+                `<button class="link-btn" onclick="openOriginal()">【原图】</button><br>` +
                 `当前审核：<b>${esc(row.review_name || '未审核')}</b>`;
 
             const timestamp = Date.now();
             $('raw').src = `/asset/raw?index=${globalIndex}&t=${timestamp}`;
             $('ov').src = `/asset/overlay?index=${globalIndex}&t=${timestamp}`;
         }
+
+        function applyOriginalTransform() {
+            const img = $('fullImage');
+            img.style.transform = `translate(-50%, -50%) translate(${panX}px, ${panY}px) scale(${zoom})`;
+            $('zoomText').textContent = `${Math.round(zoom * 100)}%`;
+        }
+
+        function resetOriginalView() {
+            zoom = 1; panX = 0; panY = 0;
+            applyOriginalTransform();
+        }
+
+        function openOriginal() {
+            if (!cur) return;
+            const modal = $('originalModal');
+            $('fullTitle').textContent = `原图：${cur.image_name || ''}`;
+            resetOriginalView();
+            $('fullImage').src = `/asset/original?index=${cur.global_index}&t=${Date.now()}`;
+            modal.style.display = 'block';
+        }
+
+        function closeOriginal() {
+            $('originalModal').style.display = 'none';
+            $('fullImage').removeAttribute('src');
+        }
+
+        $('modalStage').addEventListener('wheel', (event) => {
+            event.preventDefault();
+            const oldZoom = zoom;
+            const factor = event.deltaY < 0 ? 1.12 : 1 / 1.12;
+            zoom = Math.min(12, Math.max(0.1, zoom * factor));
+
+            // 以鼠标位置为视觉中心缩放，减少放大后反复拖动。
+            const rect = $('modalStage').getBoundingClientRect();
+            const mx = event.clientX - (rect.left + rect.width / 2);
+            const my = event.clientY - (rect.top + rect.height / 2);
+            if (oldZoom > 0) {
+                const ratio = zoom / oldZoom;
+                panX = mx - (mx - panX) * ratio;
+                panY = my - (my - panY) * ratio;
+            }
+            applyOriginalTransform();
+        }, { passive: false });
+
+        function pointInsideOriginalImage(clientX, clientY) {
+            const img = $('fullImage');
+            if (!img.src) return false;
+            const rect = img.getBoundingClientRect();
+            return clientX >= rect.left && clientX <= rect.right &&
+                   clientY >= rect.top && clientY <= rect.bottom;
+        }
+
+        $('modalStage').addEventListener('mousedown', (event) => {
+            if (event.button !== 0) return;
+
+            // 只允许从当前“实际显示的原图区域”开始拖动。
+            // getBoundingClientRect() 会实时反映缩放与平移后的图像位置，
+            // 因此图片移动后，图片外可点击关闭区域也会自动跟着变化。
+            if (!pointInsideOriginalImage(event.clientX, event.clientY)) {
+                closeOriginal();
+                return;
+            }
+
+            dragging = true;
+            dragStartX = event.clientX; dragStartY = event.clientY;
+            panStartX = panX; panStartY = panY;
+            $('modalStage').classList.add('dragging');
+        });
+
+        window.addEventListener('mousemove', (event) => {
+            if (!dragging) return;
+            panX = panStartX + (event.clientX - dragStartX);
+            panY = panStartY + (event.clientY - dragStartY);
+            applyOriginalTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            dragging = false;
+            $('modalStage').classList.remove('dragging');
+        });
+
+        $('modalStage').addEventListener('dblclick', resetOriginalView);
 
         async function review(label) {
             if (!cur) return;
@@ -428,6 +576,12 @@ HTML = r'''<!doctype html>
         }
 
         document.addEventListener('keydown', async (event) => {
+            if (event.key === 'Escape' && $('originalModal').style.display === 'block') {
+                event.preventDefault();
+                closeOriginal();
+                return;
+            }
+            if ($('originalModal').style.display === 'block') return;
             if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
                 return;
             }
@@ -496,6 +650,7 @@ class Handler(BaseHTTPRequestHandler):
                     "ok": True,
                     "indices": ids,
                     "summary": self.store.summary(),
+                    "classes": self.store.classes,
                 })
 
             if url.path == "/api/item":
@@ -519,13 +674,14 @@ class Handler(BaseHTTPRequestHandler):
                     404,
                 )
 
-            if url.path in ("/asset/raw", "/asset/overlay"):
+            if url.path in ("/asset/raw", "/asset/overlay", "/asset/original"):
                 index = int(query["index"][0])
-                field = (
-                    "raw_crop_path"
-                    if url.path.endswith("raw")
-                    else "overlay_path"
-                )
+                if url.path.endswith("raw"):
+                    field = "raw_crop_path"
+                elif url.path.endswith("overlay"):
+                    field = "overlay_path"
+                else:
+                    field = "image_path"
                 path = self.store.asset(self.store.rows[index][field])
                 content_type = (
                     mimetypes.guess_type(str(path))[0]

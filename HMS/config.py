@@ -42,4 +42,4 @@ class HMSConfig:
     red_tversky_beta: float = 0.70
     red_tversky_gamma: float = 1.0
 
-    save_dir: str = "./checkpoints/HMS_lab"
+    save_dir: str = "./checkpoints/HMS_lab_2"

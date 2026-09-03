@@ -42,16 +42,16 @@ IMAGE_DIR = Path(
     # r"F:/liuhaibo/datasets/LG_JZW/LG_test"                                                  # 莱钢2 测试集原图
 
     # r"D:/lhb/datasets/testsets/HMS/0199/M2/BGA"
-    r"D:/lhb/datasets/testsets/HMS/test"
+    r"D:/lhb/datasets/testsets/HMS/test/test01"
 )
 
 
 # 单通道类别索引 Mask 目录 —— 推理
-MASK_DIR = Path(r"D:/lhb/datasets/testsets/HMS/test/mask/")  # 哈汽轮 测试集融合掩码
+MASK_DIR = Path(r"D:/lhb/datasets/testsets/HMS/test/results/mask/")  # 哈汽轮 测试集融合掩码
 # MASK_DIR = Path(r"D:/lhb/dinov3-main/output/infer_HMS/0199_M2/")  # 哈汽轮 测试集融合掩码
 
 # 输出目录
-OUTPUT_DIR = Path(r"D:/lhb/datasets/testsets/HMS/test/overlay/")  # 哈汽轮 测试集叠加结果
+OUTPUT_DIR = Path(r"D:/lhb/datasets/testsets/HMS/test/result/overlay/")  # 哈汽轮 测试集叠加结果
 
 
 # ============================================================
@@ -73,10 +73,10 @@ NUM_CLASSES = 4
 # 类别数量必须与这里配置的颜色数量一致。
 CLASS_COLORS: Dict[int, Tuple[int, int, int]] = {
 
-    1:  (255, 0,   0),      # A           蓝
-    2:  (0,   255, 0),      # B           绿
-    3:  (0,   0,   255),    # C           红
-    4:  (255, 0,   255),    # D           紫红
+    # 1:  (255, 0,   0),      # A           蓝
+    # 2:  (0,   255, 0),      # B           绿
+    # 3:  (0,   0,   255),    # C           红
+    # 4:  (255, 0,   255),    # D           紫红
     # 5:  (255, 255, 0),      # TIN-B/TIN-C 青
     # 6:  (0,   165, 255),    # TIN-D       橙
     # 7:  (203, 192, 255),    # HH          粉
@@ -94,6 +94,11 @@ CLASS_COLORS: Dict[int, Tuple[int, int, int]] = {
     # 6: (255, 128, 0),
     # 7: (0, 0, 255),
     # 8: (0, 255, 0),
+    
+    1: (255, 0, 0),      # hd_w
+    2: (0, 255, 255),    # hd_y
+    3: (255, 0, 255),    # hd_t
+    4: (0, 0, 255),      # red
 }
 
 # 类别编号 -> 显示名称
@@ -177,7 +182,7 @@ ALPHA = 0.40
 #
 # "side_by_side"
 #   左侧为原图，右侧为半透明叠加图。
-OUTPUT_MODE = "side_by_side"
+OUTPUT_MODE = "overlay"
 
 
 # ============================================================

@@ -1,27 +1,20 @@
 from pathlib import Path
-
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-
-# ============================================================
-# 配置区域
-# ============================================================
-
 IMAGE_FOLDERS = [
-    Path(r"output/LG/compare/LG_0807/LG_JZW_0807_300_new/overlay/"),
-    Path(r"output/LG/compare/LG_JZW_0807_300_2/overlay/"),
-    Path(r"output/LG/compare/LG_0807/dino_inclusion/"),
-    Path(r"output/LG/compare/LG_0807/unet/"),
+    Path(r"D:/lhb/datasets/testsets/HMS/test/test01/"),
+    Path(r"D:/lhb/datasets/testsets/HMS/test/result/overlay/"),
+    Path(r"D:/lhb/datasets/testsets/HMS/test/output_lab/"),
+    None,
 ]
 
-IMAGE_LABELS = [
-    "Dino_JZW",
-    "Dino_2",
-    "v2",
-    "unet",
-]
+IMAGE_LABELS = ["GT", "V1", "V2", None]
 
-OUTPUT_FOLDER = Path(r"output/LG/compare/merge3/")
+OUTPUT_FOLDER = Path(r"D:/lhb/datasets/testsets/HMS/test/merge/GTV1V2/")
+
+# "horizontal"：左右拼接
+# "vertical"：上下拼接
+CONCAT_DIRECTION = "vertical"
 
 FONT_PATH = r"C:\Windows\Fonts\arial.ttf"
 FONT_SIZE = 36
@@ -44,7 +37,6 @@ IMAGE_EXTENSIONS = {
 
 
 def load_font(font_path: str, font_size: int):
-    """加载指定字体，失败时使用默认字体。"""
     try:
         return ImageFont.truetype(font_path, font_size)
     except OSError:
@@ -53,40 +45,41 @@ def load_font(font_path: str, font_size: int):
 
 
 def validate_config():
-    """检查输入文件夹和标签配置是否合法。"""
     if len(IMAGE_FOLDERS) != 4:
-        raise ValueError("IMAGE_FOLDERS 必须包含 4 个位置，不使用的位置请填写 None")
+        raise ValueError("IMAGE_FOLDERS 必须包含 4 个位置")
 
     if len(IMAGE_LABELS) != 4:
         raise ValueError("IMAGE_LABELS 必须包含 4 个位置")
 
+    if CONCAT_DIRECTION not in {"horizontal", "vertical"}:
+        raise ValueError('CONCAT_DIRECTION 只能是 "horizontal" 或 "vertical"')
+
     active_indices = [
-        index
-        for index, folder in enumerate(IMAGE_FOLDERS)
+        i for i, folder in enumerate(IMAGE_FOLDERS)
         if folder is not None
     ]
 
     if len(active_indices) < 2:
         raise ValueError("至少需要配置 2 个输入文件夹")
 
-    labels = [IMAGE_LABELS[index].strip() for index in active_indices]
+    labels = [
+        IMAGE_LABELS[i].strip() if IMAGE_LABELS[i] else ""
+        for i in active_indices
+    ]
+
     has_label = [bool(label) for label in labels]
 
     if any(has_label) and not all(has_label):
-        raise ValueError("标签配置错误：标签必须全部填写或全部留空，不允许只给部分图片设置标签")
+        raise ValueError("标签必须全部填写或全部留空")
 
     return active_indices, all(has_label)
 
 
 def collect_images(folder: Path) -> dict[str, Path]:
-    """收集文件夹中的图片，使用不含扩展名的文件名作为匹配键。"""
-    images = {}
-
     if not folder.exists():
         raise FileNotFoundError(f"文件夹不存在：{folder}")
 
-    if not folder.is_dir():
-        raise NotADirectoryError(f"路径不是文件夹：{folder}")
+    images = {}
 
     for file_path in folder.iterdir():
         if not file_path.is_file():
@@ -99,8 +92,9 @@ def collect_images(folder: Path) -> dict[str, Path]:
 
         if key in images:
             print(
-                f"警告：文件夹 {folder} 中存在同名图片："
-                f"{images[key].name} 和 {file_path.name}，将使用 {images[key].name}"
+                f"警告：{folder} 中存在同名图片："
+                f"{images[key].name} 和 {file_path.name}，"
+                f"保留 {images[key].name}"
             )
             continue
 
@@ -110,13 +104,11 @@ def collect_images(folder: Path) -> dict[str, Path]:
 
 
 def load_image(image_path: Path) -> Image.Image:
-    """读取图片并处理 EXIF 方向。"""
     with Image.open(image_path) as source:
         return ImageOps.exif_transpose(source).convert("RGB")
 
 
 def normalize_images(images: list[Image.Image]) -> list[Image.Image]:
-    """保持宽高比，将多张图片统一到相同画布尺寸。"""
     target_width = max(image.width for image in images)
     target_height = max(image.height for image in images)
 
@@ -124,9 +116,7 @@ def normalize_images(images: list[Image.Image]) -> list[Image.Image]:
 
     for image in images:
         contained = ImageOps.contain(
-            image,
-            (target_width, target_height),
-            method=Image.Resampling.LANCZOS,
+            image, (target_width, target_height), method=Image.Resampling.LANCZOS
         )
 
         canvas = Image.new("RGB", (target_width, target_height), CANVAS_COLOR)
@@ -141,13 +131,12 @@ def normalize_images(images: list[Image.Image]) -> list[Image.Image]:
 
 
 def draw_label(image: Image.Image, text: str, font) -> None:
-    """在图片左上角绘制标签。"""
     if not text:
         return
 
     draw = ImageDraw.Draw(image, "RGBA")
-    text_bbox = draw.textbbox((0, 0), text, font=font)
 
+    text_bbox = draw.textbbox((0, 0), text, font=font)
     text_width = text_bbox[2] - text_bbox[0]
     text_height = text_bbox[3] - text_bbox[1]
 
@@ -168,58 +157,34 @@ def draw_label(image: Image.Image, text: str, font) -> None:
     text_x = box_x1 + LABEL_PADDING - text_bbox[0]
     text_y = box_y1 + LABEL_PADDING - text_bbox[1]
 
-    draw.text(
-        (text_x, text_y),
-        text,
-        font=font,
-        fill=(*TEXT_COLOR, 255),
-    )
+    draw.text((text_x, text_y), text, font=font, fill=(*TEXT_COLOR, 255))
 
 
-def merge_two(images: list[Image.Image]) -> Image.Image:
-    """两张图片左右排列。"""
+def merge_horizontal(images: list[Image.Image]) -> Image.Image:
     width = images[0].width
     height = images[0].height
 
-    merged = Image.new("RGB", (width * 2, height), CANVAS_COLOR)
+    merged = Image.new("RGB", (width * len(images), height), CANVAS_COLOR)
 
-    merged.paste(images[0], (0, 0))
-    merged.paste(images[1], (width, 0))
+    for index, image in enumerate(images):
+        merged.paste(image, (width * index, 0))
 
     return merged
 
 
-def merge_three(images: list[Image.Image]) -> Image.Image:
-    """三张图片左、中、右排列。"""
+def merge_vertical(images: list[Image.Image]) -> Image.Image:
     width = images[0].width
     height = images[0].height
 
-    merged = Image.new("RGB", (width * 3, height), CANVAS_COLOR)
+    merged = Image.new("RGB", (width, height * len(images)), CANVAS_COLOR)
 
-    merged.paste(images[0], (0, 0))
-    merged.paste(images[1], (width, 0))
-    merged.paste(images[2], (width * 2, 0))
-
-    return merged
-
-
-def merge_four(images: list[Image.Image]) -> Image.Image:
-    """四张图片按照 2×2 四宫格排列。"""
-    width = images[0].width
-    height = images[0].height
-
-    merged = Image.new("RGB", (width * 2, height * 2), CANVAS_COLOR)
-
-    merged.paste(images[0], (0, 0))
-    merged.paste(images[1], (width, 0))
-    merged.paste(images[2], (0, height))
-    merged.paste(images[3], (width, height))
+    for index, image in enumerate(images):
+        merged.paste(image, (0, height * index))
 
     return merged
 
 
 def merge_images(image_paths, labels, output_path, font, show_labels):
-    """读取图片、添加标签并进行拼接。"""
     images = [load_image(path) for path in image_paths]
     images = normalize_images(images)
 
@@ -229,21 +194,16 @@ def merge_images(image_paths, labels, output_path, font, show_labels):
 
     image_count = len(images)
 
-    if image_count == 2:
-        merged_image = merge_two(images)
-    elif image_count == 3:
-        merged_image = merge_three(images)
-    elif image_count == 4:
-        merged_image = merge_four(images)
-    else:
+    if image_count < 2 or image_count > 4:
         raise ValueError(f"只能拼接 2~4 张图片，当前为 {image_count} 张")
 
+    if CONCAT_DIRECTION == "horizontal":
+        merged_image = merge_horizontal(images)
+    else:
+        merged_image = merge_vertical(images)
+
     merged_image.save(
-        output_path,
-        format="JPEG",
-        quality=JPG_QUALITY,
-        subsampling=0,
-        optimize=True,
+        output_path, format="JPEG", quality=JPG_QUALITY, subsampling=0, optimize=True
     )
 
 
@@ -262,7 +222,6 @@ def main():
         image_maps[index] = images
 
         label = IMAGE_LABELS[index] if show_labels else "无标签"
-
         print(f"  [{index + 1}] {folder}: {len(images)} 张，标签：{label}")
 
     all_names = set()
@@ -282,7 +241,10 @@ def main():
     failed_count = 0
     skipped_count = 0
 
-    print(f"\n共发现 {len(all_names)} 个不同图片名称。\n")
+    direction_text = "水平（左 → 右）" if CONCAT_DIRECTION == "horizontal" else "垂直（上 → 下）"
+
+    print(f"\n共发现 {len(all_names)} 个不同图片名称。")
+    print(f"当前拼接方式：{direction_text}\n")
 
     for index, name in enumerate(all_names, start=1):
         image_paths = []
@@ -301,7 +263,10 @@ def main():
 
         if image_count < 2:
             skipped_count += 1
-            print(f"[{index}/{len(all_names)}] 跳过：{name}，只找到 {image_count} 张图片")
+            print(
+                f"[{index}/{len(all_names)}] "
+                f"跳过：{name}，只找到 {image_count} 张图片"
+            )
             continue
 
         output_path = OUTPUT_FOLDER / f"{name}.jpg"
@@ -310,14 +275,23 @@ def main():
             merge_images(image_paths, labels, output_path, font, show_labels)
 
             success_count += 1
-            print(f"[{index}/{len(all_names)}] merge ok: {output_path.name} ({image_count} images)")
+
+            print(
+                f"[{index}/{len(all_names)}] "
+                f"merge ok: {output_path.name} "
+                f"({image_count} images)"
+            )
 
         except Exception as error:
             failed_count += 1
-            print(f"[{index}/{len(all_names)}] 处理失败：{name}，原因：{error}")
+            print(
+                f"[{index}/{len(all_names)}] "
+                f"处理失败：{name}，原因：{error}"
+            )
 
     print("\n==============================")
     print("处理完成")
+    print(f"拼接方式：{direction_text}")
     print(f"成功：{success_count}")
     print(f"跳过：{skipped_count}")
     print(f"失败：{failed_count}")
