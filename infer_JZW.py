@@ -43,7 +43,7 @@ from models.dinov3_segmentation import DINOv3Seg
 # ╚══════════════════════════════════════════════════════════════╝
 INFER = {
     # ========== 测试数据 ==========
-    "test_image_dir": "D:/lhb/datasets/testsets/JZW/LG_JZW_0807_300",
+    "test_image_dir": "D:/lhb/datasets/testsets/JZW/HQL_0825/1",
 
     # ========== 单模型 ==========
     "checkpoint_dir":  "./checkpoints/JZW_2",
@@ -63,7 +63,7 @@ INFER = {
     "confidence_threshold": 0.1,
 
     # ========== 输出 ==========
-    "output_dir": "output/LG/compare/LG_JZW_0807_300_2",
+    "output_dir": "output/HQL_0825/1",
     "save_mask": True,               # 保存类别索引 mask
     "output_mode": "overlay",        # overlay / side_by_side
 
