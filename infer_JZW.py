@@ -43,7 +43,7 @@ from models.dinov3_segmentation import DINOv3Seg
 # ╚══════════════════════════════════════════════════════════════╝
 INFER = {
     # ========== 测试数据 ==========
-    "test_image_dir": "D:/lhb/datasets/testsets/JZW/HQL_0825/1",
+    "test_image_dir": "D:/lhb/datasets/testsets/JZW/01-03-rotate",
 
     # ========== 单模型 ==========
     "checkpoint_dir":  "./checkpoints/JZW_2",
@@ -63,9 +63,9 @@ INFER = {
     "confidence_threshold": 0.1,
 
     # ========== 输出 ==========
-    "output_dir": "output/HQL_0825/1",
+    "output_dir": "D:/lhb/datasets/testsets/JZW/01-03-rotate/results/JZW_2/01-03-rotate/",
     "save_mask": True,               # 保存类别索引 mask
-    "output_mode": "overlay",        # overlay / side_by_side
+    "output_mode": "side_by_side",        # overlay / side_by_side
 
     # ========== 叠加显示 ==========
     "display_class_ids": {1, 2, 3, 4, 5, 6},

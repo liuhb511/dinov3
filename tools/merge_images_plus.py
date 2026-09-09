@@ -2,19 +2,25 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 IMAGE_FOLDERS = [
-    Path(r"D:/lhb/datasets/testsets/HMS/test/test01/"),
-    Path(r"D:/lhb/datasets/testsets/HMS/test/result/overlay/"),
-    Path(r"D:/lhb/datasets/testsets/HMS/test/output_lab/"),
-    None,
+    Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/dino/overlay/"),
+    Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/dino_correct/overlay/"),
+    Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/dino_cnn/overlay/"),
+    # Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/dino_small/overlay/"),
+    Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/Unet/overlay/"),
 ]
 
-IMAGE_LABELS = ["GT", "V1", "V2", None]
+IMAGE_LABELS = ["dino", "dino_correct", "dino_cnn", "Unet"]
 
-OUTPUT_FOLDER = Path(r"D:/lhb/datasets/testsets/HMS/test/merge/GTV1V2/")
+OUTPUT_FOLDER = Path(r"D:/lhb/datasets/testsets/JZW/LG-JZW-0827/results/JZW_2/merge/dino_cnn/")
 
+# 2~3 张图片：
 # "horizontal"：左右拼接
 # "vertical"：上下拼接
-CONCAT_DIRECTION = "vertical"
+#
+# 4 张图片：
+# 始终采用 2×2 拼接，但排列顺序参考 CONCAT_DIRECTION。
+
+CONCAT_DIRECTION = "horizontal"
 
 FONT_PATH = r"C:\Windows\Fonts\arial.ttf"
 FONT_SIZE = 36
@@ -116,10 +122,16 @@ def normalize_images(images: list[Image.Image]) -> list[Image.Image]:
 
     for image in images:
         contained = ImageOps.contain(
-            image, (target_width, target_height), method=Image.Resampling.LANCZOS
+            image,
+            (target_width, target_height),
+            method=Image.Resampling.LANCZOS,
         )
 
-        canvas = Image.new("RGB", (target_width, target_height), CANVAS_COLOR)
+        canvas = Image.new(
+            "RGB",
+            (target_width, target_height),
+            CANVAS_COLOR,
+        )
 
         x = (target_width - contained.width) // 2
         y = (target_height - contained.height) // 2
@@ -135,8 +147,8 @@ def draw_label(image: Image.Image, text: str, font) -> None:
         return
 
     draw = ImageDraw.Draw(image, "RGBA")
-
     text_bbox = draw.textbbox((0, 0), text, font=font)
+
     text_width = text_bbox[2] - text_bbox[0]
     text_height = text_bbox[3] - text_bbox[1]
 
@@ -157,14 +169,23 @@ def draw_label(image: Image.Image, text: str, font) -> None:
     text_x = box_x1 + LABEL_PADDING - text_bbox[0]
     text_y = box_y1 + LABEL_PADDING - text_bbox[1]
 
-    draw.text((text_x, text_y), text, font=font, fill=(*TEXT_COLOR, 255))
+    draw.text(
+        (text_x, text_y),
+        text,
+        font=font,
+        fill=(*TEXT_COLOR, 255),
+    )
 
 
 def merge_horizontal(images: list[Image.Image]) -> Image.Image:
     width = images[0].width
     height = images[0].height
 
-    merged = Image.new("RGB", (width * len(images), height), CANVAS_COLOR)
+    merged = Image.new(
+        "RGB",
+        (width * len(images), height),
+        CANVAS_COLOR,
+    )
 
     for index, image in enumerate(images):
         merged.paste(image, (width * index, 0))
@@ -176,10 +197,61 @@ def merge_vertical(images: list[Image.Image]) -> Image.Image:
     width = images[0].width
     height = images[0].height
 
-    merged = Image.new("RGB", (width, height * len(images)), CANVAS_COLOR)
+    merged = Image.new(
+        "RGB",
+        (width, height * len(images)),
+        CANVAS_COLOR,
+    )
 
     for index, image in enumerate(images):
         merged.paste(image, (0, height * index))
+
+    return merged
+
+
+def merge_grid_2x2(images: list[Image.Image], direction: str) -> Image.Image:
+    """
+    4 张图片按 2×2 拼接。
+
+    horizontal：按行优先排列
+        [1] [2]
+        [3] [4]
+
+    vertical：按列优先排列
+        [1] [3]
+        [2] [4]
+    """
+    if len(images) != 4:
+        raise ValueError(
+            f"merge_grid_2x2 只接受 4 张图片，当前为 {len(images)} 张"
+        )
+
+    width = images[0].width
+    height = images[0].height
+
+    merged = Image.new(
+        "RGB",
+        (width * 2, height * 2),
+        CANVAS_COLOR,
+    )
+
+    if direction == "horizontal":
+        positions = [
+            (0, 0),
+            (width, 0),
+            (0, height),
+            (width, height),
+        ]
+    else:
+        positions = [
+            (0, 0),
+            (0, height),
+            (width, 0),
+            (width, height),
+        ]
+
+    for image, position in zip(images, positions):
+        merged.paste(image, position)
 
     return merged
 
@@ -197,13 +269,19 @@ def merge_images(image_paths, labels, output_path, font, show_labels):
     if image_count < 2 or image_count > 4:
         raise ValueError(f"只能拼接 2~4 张图片，当前为 {image_count} 张")
 
-    if CONCAT_DIRECTION == "horizontal":
+    if image_count == 4:
+        merged_image = merge_grid_2x2(images, CONCAT_DIRECTION)
+    elif CONCAT_DIRECTION == "horizontal":
         merged_image = merge_horizontal(images)
     else:
         merged_image = merge_vertical(images)
 
     merged_image.save(
-        output_path, format="JPEG", quality=JPG_QUALITY, subsampling=0, optimize=True
+        output_path,
+        format="JPEG",
+        quality=JPG_QUALITY,
+        subsampling=0,
+        optimize=True,
     )
 
 
@@ -241,10 +319,16 @@ def main():
     failed_count = 0
     skipped_count = 0
 
-    direction_text = "水平（左 → 右）" if CONCAT_DIRECTION == "horizontal" else "垂直（上 → 下）"
+    if CONCAT_DIRECTION == "horizontal":
+        direction_text = "水平优先"
+        four_image_text = "2×2，顺序为：[1][2] / [3][4]"
+    else:
+        direction_text = "垂直优先"
+        four_image_text = "2×2，顺序为：[1][3] / [2][4]"
 
     print(f"\n共发现 {len(all_names)} 个不同图片名称。")
-    print(f"当前拼接方式：{direction_text}\n")
+    print(f"当前拼接方式：{direction_text}")
+    print(f"4 张图片排列：{four_image_text}\n")
 
     for index, name in enumerate(all_names, start=1):
         image_paths = []
@@ -272,10 +356,15 @@ def main():
         output_path = OUTPUT_FOLDER / f"{name}.jpg"
 
         try:
-            merge_images(image_paths, labels, output_path, font, show_labels)
+            merge_images(
+                image_paths,
+                labels,
+                output_path,
+                font,
+                show_labels,
+            )
 
             success_count += 1
-
             print(
                 f"[{index}/{len(all_names)}] "
                 f"merge ok: {output_path.name} "
