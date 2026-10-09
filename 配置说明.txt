@@ -31,3 +31,30 @@ python train_EMA.py
 JZW：使用修改后数据集训练夹杂物分割模型，不学习负样本
 JZW_2：在JZW的基础上，修改了dinov3_encoder，
 
+
+----------------------------------------------
+2026年9月11日
+1. 训练ABC模型
+    "dataset_root":    "D:/lhb/datasets/JZW_v4/train/ABC",     # 根目录，自动拼接子路径
+    "num_classes": 4,
+    "save_dir":        "./checkpoints/JZW_ABC_3",
+    "log_dir":         "./logs/JZW_ABC_3",
+
+2. 训练DTIN模型
+    "dataset_root":    "D:/lhb/datasets/JZW_v4/train/DTIN",     # 根目录，自动拼接子路径
+    "num_classes": 4,
+    "save_dir":        "./checkpoints/JZW_DTIN_3",
+    "log_dir":         "./logs/JZW_DTIN_3",
+
+3. 训练ABCTIN模型
+    "dataset_root":    "D:/lhb/datasets/JZW_v4/train/ABCTIN",     # 根目录，自动拼接子路径
+    "num_classes": 6,
+    "save_dir":        "./checkpoints/JZW_ABCTIN_3",
+    "log_dir":         "./logs/JZW_ABCTIN_3",
+    
+4. 训练D模型
+    "dataset_root":    "D:/lhb/datasets/JZW_v4/train/D",     # 根目录，自动拼接子路径
+    "num_classes": 2,
+    "save_dir":        "./checkpoints/JZW_D_3",
+    "log_dir":         "./logs/JZW_D_3",
+----------------------------------------------

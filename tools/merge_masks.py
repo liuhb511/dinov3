@@ -144,15 +144,15 @@ def merge_mask_folders(mask1_dir, mask2_dir, output_dir):
 
 if __name__ == "__main__":
     # 第一组掩码文件夹
-    mask1_dir = "D:/lhb/datasets/testsets/JZW/01-03-rotate/results/unet/masks_ABC"
+    mask1_dir = "D:/lhb/datasets/testsets/JZW/JZW_test/JZW_test/result/unet/masks_ABC"
     # mask1_dir = "./output/infer_LG/744_gray/ABCTIN1024_gray/"
 
     # 第二组掩码文件夹
-    mask2_dir = "D:/lhb/datasets/testsets/JZW/01-03-rotate/results/unet/masks_D/"
+    mask2_dir = "D:/lhb/datasets/testsets/JZW/JZW_test/JZW_test/result/unet/masks_D/"
     # mask2_dir = "./output/infer_LG/744_gray/D1024_gray/"
 
     # 融合后的掩码保存文件夹
-    output_dir = "D:/lhb/datasets/testsets/JZW/01-03-rotate/results/unet/masks_merge/"
+    output_dir = "D:/lhb/datasets/testsets/JZW/JZW_test/JZW_test/result/unet/masks_merge/"
     # output_dir = "./output/merge/744_gray/"
 
     merge_mask_folders(mask1_dir, mask2_dir, output_dir)

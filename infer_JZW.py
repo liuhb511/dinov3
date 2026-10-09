@@ -43,10 +43,12 @@ from models.dinov3_segmentation import DINOv3Seg
 # ╚══════════════════════════════════════════════════════════════╝
 INFER = {
     # ========== 测试数据 ==========
-    "test_image_dir": "D:/lhb/datasets/testsets/JZW/01-03-rotate",
+    # "test_image_dir": "D:/lhb/datasets/testsets/JZW/JZW_test/JZW_test",
+    # "test_image_dir": "D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/2",
+    "test_image_dir": "D:/lhb/datasets/testsets/JZW/LG-JZW-0827/TiN2LS74",
 
     # ========== 单模型 ==========
-    "checkpoint_dir":  "./checkpoints/JZW_2",
+    "checkpoint_dir":  "./checkpoints/JZW_JZW_3",
     "checkpoint_name": "best_iou",   # best_iou / best_dice / last / 完整 .pth 路径
 
     # 0=background, 1=A, 2=B, 3=C, 4=D, 5=TIN-B/TIN-C, 6=TIN-D
@@ -63,9 +65,11 @@ INFER = {
     "confidence_threshold": 0.1,
 
     # ========== 输出 ==========
-    "output_dir": "D:/lhb/datasets/testsets/JZW/01-03-rotate/results/JZW_2/01-03-rotate/",
+    # "output_dir": "D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/3_JZW",
+    # "output_dir": "D:/lhb/datasets/testsets/JZW/JZW_test/result_3/JZW_4_1",
+    "output_dir": "D:/lhb/datasets/testsets/JZW/LG-JZW-0827/results/TiN2LS74/JZW_3",
     "save_mask": True,               # 保存类别索引 mask
-    "output_mode": "side_by_side",        # overlay / side_by_side
+    "output_mode": "overlay",        # overlay / side_by_side
 
     # ========== 叠加显示 ==========
     "display_class_ids": {1, 2, 3, 4, 5, 6},

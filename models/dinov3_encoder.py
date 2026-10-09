@@ -60,9 +60,9 @@ class DINOv3Encoder(nn.Module):
         hs = outputs.hidden_states
 
         # 取最后3层 hidden states
-        f_low = hs[-3]
-        f_mid = hs[-2]
-        f_high = hs[-1]
+        f_low = hs[4]
+        f_mid = hs[8]
+        f_high = hs[12]
 
         def reshape(feat):
             B, N, C = feat.shape

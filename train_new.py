@@ -23,7 +23,7 @@ from types import SimpleNamespace
 # ╚══════════════════════════════════════════════════════════════╝
 TRAIN = {
     # ========== 数据集 ==========
-    "dataset_root":    "D:/lhb/datasets/JZW_v3/JZW",     # 根目录，自动拼接子路径
+    "dataset_root":    "D:/lhb/datasets/JZW_v4/train_Z/ABCTIN",     # 根目录，自动拼接子路径
     # "dataset_root":    "F:/liuhaibo/DINOv3-CARNet-Doo-main/dataset/BG_HQL_JZW_ABC_V2",     # 根目录，自动拼接子路径
 
     # ========== 模型结构（必须与预训练/checkpoint一致）==========
@@ -32,12 +32,12 @@ TRAIN = {
 
     # ========== num_classes 类别数，包含背景 ==========
     # 4(D类) / 5(ABCD) / 7(ABC) / 5(D+TIN-D) / 9(ABC+TIN-B+TIN-C) / 9（ABC+TIN）
-    "num_classes":     7,
+    "num_classes":     6,
 
     "image_size":      1024,
 
     # ========== 训练超参 ==========
-    "batch_size":      4,
+    "batch_size":      2,
     "num_workers":     4,
     "epochs":          100,
     "learning_rate":   1e-4,          # Stage1 学习率
@@ -56,8 +56,8 @@ TRAIN = {
     "boundary_weight": 0.2,             # Boundary Head 默认不启用
 
     # ========== 保存 / 日志 ==========
-    "save_dir":        "./checkpoints/JZW_2",
-    "log_dir":         "./logs/JZW_2",
+    "save_dir":        "./checkpoints/JZW_ABCTIN_4",
+    "log_dir":         "./logs/JZW_ABCTIN_4",
     "resume":          "",            # 断点续训 checkpoint 路径，空=不续训
     "save_best_iou":   True,
     "save_best_dice":  True,

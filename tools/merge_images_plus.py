@@ -2,16 +2,16 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 IMAGE_FOLDERS = [
-    Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/dino/overlay/"),
+    Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/3_ABCTIN_D/overlay/"),
+    Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/3_ABC_DTIN/overlay/"),
     Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/dino_correct/overlay/"),
-    Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/dino_cnn/overlay/"),
-    # Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/dino_small/overlay/"),
+    # Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/3_ABCTIN_D_3/dino_small/overlay/"),
     Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/Unet/overlay/"),
 ]
 
-IMAGE_LABELS = ["dino", "dino_correct", "dino_cnn", "Unet"]
+IMAGE_LABELS = ["ABC_DTIN_3", "ABCTIN_D_3", "JZW_3", "JZW_4"]
 
-OUTPUT_FOLDER = Path(r"D:/lhb/datasets/testsets/JZW/LG-JZW-0827/results/JZW_2/merge/dino_cnn/")
+OUTPUT_FOLDER = Path(r"D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/merge/merge3_1/")
 
 # 2~3 张图片：
 # "horizontal"：左右拼接

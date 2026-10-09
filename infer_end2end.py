@@ -28,16 +28,16 @@ from types import SimpleNamespace
 # ╚══════════════════════════════════════════════════════════════╝
 INFER = {
     # ========== 测试数据 ==========
-    "test_image_dir": "D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/2",
+    "test_image_dir": "D:/lhb/datasets/testsets/JZW/JZW_test/JZW_test",
 
     # ========== 条状模型（模型1，9类：A/B/C/HH/XW/XQL/TIN-B/TIN-C/TIN-D）==========
-    "strip_checkpoint_dir":  "./checkpoints/ABCTIN_1024_v2",
-    "strip_checkpoint_name": "ABCTIN_slim",                    # best_iou / best_dice / last / 完整路径
-    "strip_num_classes":     9,
+    "strip_checkpoint_dir":  "./checkpoints/JZW_ABC_3",
+    "strip_checkpoint_name": "best_iou",                    # best_iou / best_dice / last / 完整路径
+    "strip_num_classes":     4,
 
     # ========== 点状模型（模型2，4类：D/HC/SZ）==========
-    "point_checkpoint_dir":  "./checkpoints/D_1024_v2",
-    "point_checkpoint_name": "DDS_slim",                    # best_iou / best_dice / last / 完整路径
+    "point_checkpoint_dir":  "./checkpoints/JZW_DTIN_3",
+    "point_checkpoint_name": "best_iou",                    # best_iou / best_dice / last / 完整路径
     "point_num_classes":     4,
 
     # ========== 模型结构（两个模型共用，必须与训练时一致）==========
@@ -52,7 +52,7 @@ INFER = {
 
     # ========== 输出 ==========
     # "output_dir": "F:/liuhaibo/compare/overlay/old",
-    "output_dir": "D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/dino",                 # 叠加结果输出目录
+    "output_dir": "D:/lhb/datasets/testsets/JZW/JZW_test/result_3/ABC_DTIN_3",                 # 叠加结果输出目录
     "save_intermediate_masks": False,                        # 是否顺带保存 mask_strip/mask_point/mask_merged
     "output_mode": "overlay",                          # side_by_side(原图|叠加) / overlay(仅叠加)
 

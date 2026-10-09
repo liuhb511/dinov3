@@ -13,9 +13,9 @@ from shapely.geometry import GeometryCollection, MultiPolygon, Polygon, box
 from shapely.ops import unary_union
 
 # ============================ 用户配置 ============================
-IMAGE_DIR = Path(r"F:/liuhaibo/datasets/JZW_v3/TIN")
-JSON_DIR = Path(r"F:/liuhaibo/datasets/JZW_v3/TIN")
-OUTPUT_DIR = Path(r"F:/liuhaibo/datasets/JZW_v3/crop_1024/TIN")
+IMAGE_DIR = Path(r"D:/lhb/datasets/JZW_v4/JZW/JZW")
+JSON_DIR = Path(r"D:/lhb/datasets/JZW_v4/JZW/JZW")
+OUTPUT_DIR = Path(r"D:/lhb/datasets/JZW_v4/process/JZW_1024")
 RECURSIVE = False                       # 是否递归扫描子目录
 CROP_SIZE = 1024                        # 裁剪窗口边长，可改为 784
 MAX_CROPS_PER_IMAGE = 4                 # 每张原图最多保存窗口数

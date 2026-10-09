@@ -42,16 +42,16 @@ IMAGE_DIR = Path(
     # r"F:/liuhaibo/datasets/LG_JZW/LG_test"                                                  # 莱钢2 测试集原图
 
     # r"D:/lhb/datasets/testsets/HMS/0199/M2/BGA"
-    r"D:/lhb/datasets/testsets/JZW/01-03-rotate/test"
+    r"D:/lhb/datasets/testsets/JZW/JZW_test/JZW_test"
 )
 
 
 # 单通道类别索引 Mask 目录 —— 推理
-MASK_DIR = Path(r"D:/lhb/datasets/testsets/JZW/01-03-rotate/results/JZW_2/01-03-rotate/mask/")  # 哈汽轮 测试集融合掩码
+MASK_DIR = Path(r"D:/lhb/datasets/testsets/JZW/JZW_test/result/unet/masks_merge/")  # 哈汽轮 测试集融合掩码
 # MASK_DIR = Path(r"D:/lhb/dinov3-main/output/infer_HMS/0199_M2/")  # 哈汽轮 测试集融合掩码
 
 # 输出目录
-OUTPUT_DIR = Path(r"D:/lhb/datasets/testsets/JZW/01-03-rotate/results/unet/overlay2/")  # 哈汽轮 测试集叠加结果
+OUTPUT_DIR = Path(r"D:/lhb/datasets/testsets/JZW/JZW_test/result/unet/overlay/")  # 哈汽轮 测试集叠加结果
 
 
 # ============================================================

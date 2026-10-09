@@ -10,7 +10,7 @@ import numpy as np
 # =========================
 
 # 掩码文件夹
-MASK_DIR = r"F:/liuhaibo/datasets/JZW/ABCTIN_1024/train/masks"
+MASK_DIR = r"D:/lhb/datasets/JZW_v4/train_Z/JZW/total/SegmentationClass"
 
 # 是否递归统计子文件夹
 RECURSIVE = False
