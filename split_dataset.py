@@ -9,11 +9,11 @@ from pathlib import Path
 # ==========================================================
 
 # 原始数据路径
-images_dir = r"D:/lhb/datasets/SX/SX1009/JPEGImages/"
-masks_dir = r"D:/lhb/datasets/SX/SX1009/SegmentationClass/"
+images_dir = r"D:/lhb/datasets/AFe/SGWC_AFe-0911/JPEGImages/"
+masks_dir = r"D:/lhb/datasets/AFe/SGWC_AFe-0911/SegmentationClass/"
 
 # 输出数据集路径
-output_dir = r"D:/lhb/datasets/SX/SX1009/"
+output_dir = r"D:/lhb/datasets/AFe/SGWC_AFe-0911/"
 # 数据划分比例
 train_ratio = 0.8
 val_ratio = 0.2
