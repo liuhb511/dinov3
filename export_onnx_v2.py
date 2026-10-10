@@ -17,15 +17,15 @@ sys.modules.setdefault("numpy._core.multiarray", np.core.multiarray)
 # ============================================================
 
 BACKBONE_NAME = "dinov3_model"
-NUM_CLASSES = 4
-IMAGE_SIZE = 784
+NUM_CLASSES = 2
+IMAGE_SIZE = 1024
 FREEZE_BACKBONE = True
 
 # pth 模型
-WEIGHT_PATH = r"checkpoints\D784\D784_slim.pth"
+WEIGHT_PATH = r"checkpoints\SX1009\SX.pth"
 
 # ONNX 输出位置
-ONNX_PATH = r"checkpoints\D784\D784_slim.onnx"
+ONNX_PATH = r"checkpoints\SX1009\SX.onnx"
 
 
 MODEL_CFG = SimpleNamespace(
@@ -95,6 +95,7 @@ def export_onnx(weight_path, onnx_path, device):
         dummy_input,
         onnx_path,
         export_params=True,
+        external_data=False,
         opset_version=17,
         do_constant_folding=True,
         input_names=["input"],
