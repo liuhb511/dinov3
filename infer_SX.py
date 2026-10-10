@@ -75,6 +75,7 @@ INFER = {
     "display_class_ids": {1, 2, 3, 4, 5, 6},
     "alpha": 0.40,
     "draw_contours": True,
+    "draw_labels": True,             # True=绘制类别标签；False=隐藏标签
     "contour_thickness": 0,          # >0 时绘制不透明轮廓
     "min_component_area": 2,
     "label_font_scale": 0.65,
@@ -113,6 +114,7 @@ num_classes          = int(INFER["num_classes"])
 display_class_ids     = set(INFER["display_class_ids"])
 alpha                 = float(INFER["alpha"])
 draw_contours         = bool(INFER["draw_contours"])
+draw_labels           = bool(INFER["draw_labels"])
 contour_thickness     = int(INFER["contour_thickness"])
 min_component_area    = int(INFER["min_component_area"])
 label_font_scale      = float(INFER["label_font_scale"])
@@ -376,7 +378,7 @@ def draw_class_contours_and_labels(image, mask):
             if area < min_component_area:
                 continue
 
-            if contour_thickness > 0:
+            if draw_contours and contour_thickness > 0:
                 cv2.drawContours(
                     result,
                     [contour],
@@ -385,6 +387,9 @@ def draw_class_contours_and_labels(image, mask):
                     thickness=contour_thickness,
                     lineType=cv2.LINE_AA,
                 )
+
+            if not draw_labels:
+                continue
 
             x, y, width, height = cv2.boundingRect(contour)
 
@@ -451,7 +456,7 @@ def create_overlay(image, mask):
         blended = original * (1.0 - alpha) + color * alpha
         overlay[class_region] = np.clip(blended, 0, 255).astype(np.uint8)
 
-    if draw_contours:
+    if draw_contours or draw_labels:
         overlay = draw_class_contours_and_labels(overlay, mask)
 
     return overlay
