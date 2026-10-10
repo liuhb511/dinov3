@@ -1,0 +1,6 @@
+# Use an existing project environment with DINOv3-compatible transformers.
+torch>=2.5
+numpy
+opencv-python
+transformers>=4.56
+safetensors
