@@ -2,7 +2,7 @@ from pathlib import Path
 
 # ====================== 用户配置 ======================
 
-TARGET_DIR = Path(r"D:\lhb\datasets\AFe\SGWC_AFe-0911\json")  # 目标目录
+TARGET_DIR = Path(r"D:\lhb\datasets\AFe\SGWC_AFe-0911\SegmentationClass")  # 目标目录
 
 RECURSIVE = False  # True：包含子文件夹；False：仅当前目录
 

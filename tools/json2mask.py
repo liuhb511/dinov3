@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import json
 from pathlib import Path
@@ -8,101 +6,88 @@ import cv2
 import numpy as np
 
 
-# ============================ 用户配置 ============================
+# ====================== 用户配置 ======================
 
-JSON_DIR = Path(r"D:/lhb/datasets/AFe/SGWC_AFe-0911/json")
-OUTPUT_DIR = Path(r"D:/lhb/datasets/AFe/SGWC_AFe-0911/masks")
+JSON_DIR = Path(r"D:\lhb\datasets\AFe\SGWC_AFe-0911\json")
+OUTPUT_DIR = Path(r"D:\lhb\datasets\AFe\SGWC_AFe-0911\SegmentationClass")
 
-RECURSIVE = False  # 是否递归处理子目录
+RECURSIVE = False  # True：递归处理子目录
 
-CLASS_MAP = {
-    "tie": 1,
-}
+# ====================================================
 
 
-# ============================ 基础函数 ============================
-
-def load_json(path):
-    try:
-        with path.open("r", encoding="utf-8") as f:
-            return json.load(f)
-    except UnicodeDecodeError:
-        with path.open("r", encoding="utf-8-sig") as f:
-            return json.load(f)
+def load_json(json_path):
+    with open(json_path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
 
 
-def normalize_label(label):
-    return str(label or "").strip().upper()
-
-
-def draw_polygon(mask, points, class_id):
-    if not isinstance(points, list) or len(points) < 3:
-        return
-
-    try:
-        pts = np.array(points, dtype=np.float32)
-        pts = np.round(pts).astype(np.int32)
-        cv2.fillPoly(mask, [pts], class_id)
-    except Exception:
-        return
-
-
-def draw_circle(mask, points, class_id):
-    if not isinstance(points, list) or len(points) != 2:
-        return
-
-    try:
-        cx, cy = float(points[0][0]), float(points[0][1])
-        px, py = float(points[1][0]), float(points[1][1])
-
-        radius = int(round(np.hypot(px - cx, py - cy)))
-        center = (int(round(cx)), int(round(cy)))
-
-        if radius > 0:
-            cv2.circle(mask, center, radius, class_id, thickness=-1)
-
-    except Exception:
-        return
-
-
-def draw_shape(mask, shape, class_id):
-    shape_type = str(shape.get("shape_type", "polygon") or "polygon").strip().lower()
+def draw_shape(mask, shape):
     points = shape.get("points", [])
+    shape_type = shape.get("shape_type", "polygon")
+
+    if not points:
+        return
+
+    pts = np.round(np.array(points, dtype=np.float32)).astype(np.int32)
 
     if shape_type == "polygon":
-        draw_polygon(mask, points, class_id)
+        if len(pts) >= 3:
+            cv2.fillPoly(mask, [pts], 1)
+
+    elif shape_type == "rectangle":
+        if len(pts) == 2:
+            x1, y1 = pts[0]
+            x2, y2 = pts[1]
+            cv2.rectangle(
+                mask,
+                (min(x1, x2), min(y1, y2)),
+                (max(x1, x2), max(y1, y2)),
+                1,
+                thickness=-1
+            )
+
     elif shape_type == "circle":
-        draw_circle(mask, points, class_id)
+        if len(pts) == 2:
+            center = tuple(pts[0])
+            radius = int(np.linalg.norm(pts[1] - pts[0]))
+            cv2.circle(mask, center, radius, 1, thickness=-1)
 
+    elif shape_type == "linestrip":
+        if len(pts) >= 2:
+            cv2.polylines(mask, [pts], False, 1, thickness=1)
 
-# ============================ 单个 JSON 处理 ============================
+    elif shape_type == "line":
+        if len(pts) == 2:
+            cv2.line(mask, tuple(pts[0]), tuple(pts[1]), 1, thickness=1)
+
+    elif shape_type == "point":
+        cv2.circle(mask, tuple(pts[0]), 1, 1, thickness=-1)
+
 
 def json_to_mask(json_path, output_path):
     data = load_json(json_path)
 
-    height = int(data.get("imageHeight", 0))
-    width = int(data.get("imageWidth", 0))
+    height = int(data["imageHeight"])
+    width = int(data["imageWidth"])
 
-    if width <= 0 or height <= 0:
-        raise ValueError(f"JSON 中 imageWidth/imageHeight 无效：{json_path}")
-
+    # 初始化背景为 0
     mask = np.zeros((height, width), dtype=np.uint8)
 
+    # 所有标注区域统一为前景 1
     for shape in data.get("shapes", []):
-        label = normalize_label(shape.get("label"))
-        class_id = CLASS_MAP.get(label, 0)
+        draw_shape(mask, shape)
 
-        # 不在映射表里的类别保持为背景 0
-        if class_id == 0:
-            continue
+    # Unicode 路径兼容保存
+    success, encoded = cv2.imencode(".png", mask)
 
-        draw_shape(mask, shape, class_id)
+    if not success:
+        raise IOError(f"PNG 编码失败：{output_path}")
 
-    if not cv2.imwrite(str(output_path), mask):
-        raise IOError(f"PNG 保存失败：{output_path}")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_bytes(encoded.tobytes())
 
+    return np.unique(mask).tolist()
 
-# ============================ 主程序 ============================
 
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -113,31 +98,37 @@ def main():
         json_files = sorted(JSON_DIR.glob("*.json"))
 
     if not json_files:
-        print(f"没有找到 JSON：{JSON_DIR}")
+        print(f"未找到 JSON 文件：{JSON_DIR}")
         return
 
-    success = 0
-    failed = 0
+    success_count = 0
+    failed_count = 0
 
     for index, json_path in enumerate(json_files, 1):
         try:
             if RECURSIVE:
-                relative_path = json_path.relative_to(JSON_DIR)
-                output_path = OUTPUT_DIR / relative_path.with_suffix(".png")
-                output_path.parent.mkdir(parents=True, exist_ok=True)
+                relative = json_path.relative_to(JSON_DIR)
+                output_path = OUTPUT_DIR / relative.with_suffix(".png")
             else:
-                output_path = OUTPUT_DIR / f"{json_path.stem}.png"
+                output_path = OUTPUT_DIR / (json_path.stem + ".png")
 
-            json_to_mask(json_path, output_path)
+            unique_values = json_to_mask(json_path, output_path)
 
-            success += 1
-            print(f"[{index}/{len(json_files)}] {json_path.name} -> {output_path.name}")
+            success_count += 1
 
-        except Exception as exc:
-            failed += 1
-            print(f"[错误] {json_path.name}：{exc}")
+            print(
+                f"[{index}/{len(json_files)}] "
+                f"{json_path.name} -> {output_path.name} "
+                f"像素值：{unique_values}"
+            )
 
-    print(f"完成：成功 {success}，失败 {failed}")
+        except Exception as e:
+            failed_count += 1
+            print(f"[错误] {json_path.name}：{e}")
+
+    print("\n========== 转换完成 ==========")
+    print(f"成功：{success_count}")
+    print(f"失败：{failed_count}")
 
 
 if __name__ == "__main__":
