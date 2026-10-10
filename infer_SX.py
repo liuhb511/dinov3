@@ -3,22 +3,17 @@ infer_JZW_end2end.py —— DINOv3 夹杂物（JZW）单模型端到端推理
 
 流程：
     1. 加载一个分割模型
-    2. 滑动窗口推理
+    2. 整图 resize 至 crop_size × crop_size 后推理，恢复至原图尺寸
     3. 输出单通道类别索引 mask
     4. 将 mask 半透明叠加到原图并保存
 
 类别：
     0: background
     1: A
-    2: B
-    3: C
-    4: D
-    5: TIN-B/TIN-C
-    6: TIN-D
 
 注意：
-    当前仅识别 A/B/C/D/TIN-B/TIN-C、TIN-D  6个前景类别，加上背景类别0，
-    因此模型输出通道数 num_classes = 7。
+    当前仅识别 A 1个前景类别，加上背景类别0，
+    因此模型输出通道数 num_classes = 2。
 
 可选参数：
     python infer_JZW_end2end.py --limit N
@@ -28,7 +23,6 @@ import os
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 
 import cv2
-import math
 import numpy as np
 import sys
 import time
@@ -45,37 +39,36 @@ INFER = {
     # ========== 测试数据 ==========
     # "test_image_dir": "D:/lhb/datasets/testsets/JZW/JZW_test/JZW_test",
     # "test_image_dir": "D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/2",
-    "test_image_dir": "D:/lhb/datasets/testsets/JZW/LG-JZW-0827/TiN2LS74",
+    "test_image_dir": "D:/lhb/datasets/testsets/DZ/SX1009/1",
 
     # ========== 单模型 ==========
-    "checkpoint_dir":  "./checkpoints/JZW_JZW_3",
+    "checkpoint_dir":  "./checkpoints/SX1009",
     "checkpoint_name": "best_iou",   # best_iou / best_dice / last / 完整 .pth 路径
 
-    # 0=background, 1=A, 2=B, 3=C, 4=D, 5=TIN-B/TIN-C, 6=TIN-D
-    "num_classes": 7,
+    # 0=background, 1=A
+    "num_classes": 2,
 
     # ========== 模型结构（必须与训练时一致） ==========
     "backbone_name":   "dinov3_model",
     "freeze_backbone": True,
     "weight_source":   "auto",       # teacher(EMA) / student / auto
 
-    # ========== 滑动窗口 ==========
-    "crop_size": 1024,
-    "stride": 0,                     # 0=自适应重叠；>0=固定步长
+    # ========== 整图缩放 ==========
+    "crop_size": 1024,               # 整图缩放至 crop_size × crop_size
     "confidence_threshold": 0.1,
 
     # ========== 输出 ==========
     # "output_dir": "D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/3_JZW",
     # "output_dir": "D:/lhb/datasets/testsets/JZW/JZW_test/result_3/JZW_4_1",
-    "output_dir": "D:/lhb/datasets/testsets/JZW/LG-JZW-0827/results/TiN2LS74/JZW_3",
+    "output_dir": "D:/lhb/datasets/testsets/DZ/SX1009/result/Dino_2",
     "save_mask": True,               # 保存类别索引 mask
     "output_mode": "overlay",        # overlay / side_by_side
 
     # ========== 叠加显示 ==========
-    "display_class_ids": {1, 2, 3, 4, 5, 6},
+    "display_class_ids": {1},
     "alpha": 0.40,
     "draw_contours": True,
-    "draw_labels": True,             # True=绘制类别标签；False=隐藏标签
+    "draw_labels": False,             # True=绘制类别标签；False=隐藏标签
     "contour_thickness": 0,          # >0 时绘制不透明轮廓
     "min_component_area": 2,
     "label_font_scale": 0.65,
@@ -91,22 +84,22 @@ INFER = {
 # BGR 颜色。可按项目需要自行调整。
 CLASS_COLORS = {
     1: (255, 0,   0),    # A  蓝
-    2: (0,   255, 0),    # B  绿
-    3: (0,   0,   255),  # C  红
-    4: (255, 0,   255),  # D  紫红
+    # 2: (0,   255, 0),    # B  绿
+    # 3: (0,   0,   255),  # C  红
+    # 4: (255, 0,   255),  # D  紫红
 
-    5: (255, 255, 0),    # TIN-B/TIN-C  青
-    6: (0,   165, 255),  # TIN-D        橙
+    # 5: (255, 255, 0),    # TIN-B/TIN-C  青
+    # 6: (0,   165, 255),  # TIN-D        橙
 }
 
 CLASS_NAMES = {
     1: "A",
-    2: "B",
-    3: "C",
-    4: "D",
+    # 2: "B",
+    # 3: "C",
+    # 4: "D",
 
-    5: "TIN-B/TIN-C",
-    6: "TIN-D",
+    # 5: "TIN-B/TIN-C",
+    # 6: "TIN-D",
 }
 
 
@@ -122,12 +115,10 @@ label_font_thickness  = int(INFER["label_font_thickness"])
 label_padding         = int(INFER["label_padding"])
 output_mode           = INFER["output_mode"]
 crop_size             = int(INFER["crop_size"])
-stride_len            = int(INFER["stride"])
 confidence_threshold  = float(INFER["confidence_threshold"])
 
 MEAN = torch.tensor([0.485, 0.456, 0.406], dtype=torch.float16).view(1, 3, 1, 1)
 STD  = torch.tensor([0.229, 0.224, 0.225], dtype=torch.float16).view(1, 3, 1, 1)
-GRAY = (128, 128, 128)
 
 VALID_EXTS = (".png", ".jpg", ".jpeg", ".tif", ".tiff")
 
@@ -237,114 +228,27 @@ def _preprocess_batch(images, device):
     return (batch - MEAN.to(device)) / STD.to(device)
 
 
-def _sliding_positions(length, window_size, stride):
-    """固定步长位置，并保证最后一个窗口贴住图像边缘。"""
-    if length <= window_size:
-        return [0]
-
-    positions = list(range(0, length - window_size + 1, stride))
-    last = length - window_size
-
-    if positions[-1] != last:
-        positions.append(last)
-
-    return positions
-
-
-def _adaptive_positions(length, window_size):
-    """自适应均匀分布窗口：首尾贴边，中间均匀重叠。"""
-    if length <= window_size:
-        return [0]
-
-    span = length - window_size
-    n = math.ceil(span / window_size) + 1
-    n = max(n, 2)
-
-    step = span / (n - 1)
-    positions = [round(i * step) for i in range(n - 1)]
-    positions.append(span)
-
-    # 去重
-    unique = [positions[0]]
-    for pos in positions[1:]:
-        if pos - unique[-1] >= 2:
-            unique.append(pos)
-        else:
-            unique[-1] = max(unique[-1], pos)
-
-    return unique
-
-
-def sliding_window_infer(model, image, device, window_size, stride, num_classes):
-    """
-    滑窗推理，返回 [C,H,W] 概率图。
-
-    对重叠窗口区域进行概率累加再取平均，避免后一个窗口直接覆盖前一个窗口。
-    """
-    height, width = image.shape[:2]
-
-    if stride > 0:
-        xs = _sliding_positions(width, window_size, stride)
-        ys = _sliding_positions(height, window_size, stride)
-    else:
-        xs = _adaptive_positions(width, window_size)
-        ys = _adaptive_positions(height, window_size)
-
-    probability_sum = np.zeros(
-        (num_classes, height, width), dtype=np.float32
-    )
-    count_map = np.zeros((height, width), dtype=np.float32)
-
-    for y1 in ys:
-        for x1 in xs:
-            x2 = min(x1 + window_size, width)
-            y2 = min(y1 + window_size, height)
-
-            patch = image[y1:y2, x1:x2]
-            ph, pw = patch.shape[:2]
-
-            if ph != window_size or pw != window_size:
-                padded = np.full(
-                    (window_size, window_size, 3),
-                    GRAY,
-                    dtype=image.dtype,
-                )
-                padded[:ph, :pw] = patch
-                patch = padded
-
-            batch = _preprocess_batch(
-                np.expand_dims(patch, axis=0), device
-            )
-            probs = _predict_probabilities(model, batch)[0]
-
-            assert probs.shape[0] == num_classes, (
-                f"模型输出通道数={probs.shape[0]}，"
-                f"配置 num_classes={num_classes}"
-            )
-
-            probability_sum[:, y1:y2, x1:x2] += probs[:, :ph, :pw]
-            count_map[y1:y2, x1:x2] += 1.0
-
-    probability_map = probability_sum / np.maximum(count_map[None, ...], 1.0)
-    return probability_map
-
-
 def infer_single(model, image_bgr, device):
-    """单图推理 -> index mask + confidence。"""
+    """整图缩放推理 -> 原图尺寸的 index mask + confidence。"""
+    height, width = image_bgr.shape[:2]
     image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+    resized = cv2.resize(
+        image_rgb, (crop_size, crop_size), interpolation=cv2.INTER_LINEAR
+    )
+    batch = _preprocess_batch(np.expand_dims(resized, axis=0), device)
+    probs = _predict_probabilities(model, batch)[0]
 
-    probs = sliding_window_infer(
-        model,
-        image_rgb,
-        device,
-        window_size=crop_size,
-        stride=stride_len,
-        num_classes=num_classes,
+    assert probs.shape[0] == num_classes, (
+        f"模型输出通道数={probs.shape[0]}，配置 num_classes={num_classes}"
     )
 
+    # 先将各类别概率恢复至原图尺寸，再确定类别，避免插值类别索引。
+    probs = np.stack([
+        cv2.resize(prob, (width, height), interpolation=cv2.INTER_LINEAR)
+        for prob in probs
+    ])
     confidence = np.max(probs, axis=0).astype(np.float32)
     index_mask = np.argmax(probs, axis=0).astype(np.uint8)
-
     index_mask[confidence < confidence_threshold] = 0
     return index_mask, confidence
 
@@ -442,7 +346,7 @@ def draw_class_contours_and_labels(image, mask):
 
 
 def create_overlay(image, mask):
-    """将 A/B/C/D 四类 mask 半透明叠加到原图。"""
+    """将显示类别的 mask 半透明叠加到原图。"""
     overlay = image.copy()
 
     for class_id in sorted(display_class_ids):
@@ -506,9 +410,6 @@ def save_mask_png(output_path, mask):
     保存 uint8 单通道类别索引 mask：
         0 background
         1 A
-        2 B
-        3 C
-        4 D
     """
     success, encoded_image = cv2.imencode(".png", mask)
     if not success:
@@ -550,9 +451,6 @@ def validate_config():
     if crop_size <= 0:
         raise ValueError("crop_size 必须 > 0")
 
-    if stride_len < 0:
-        raise ValueError("stride 必须 >= 0")
-
     if output_mode not in {"overlay", "side_by_side"}:
         raise ValueError(
             'output_mode 只能是 "overlay" 或 "side_by_side"'
@@ -590,16 +488,9 @@ def main():
     )
     print_model_info(model, checkpoint_path)
 
-    mode_label = (
-        "adaptive"
-        if stride_len == 0
-        else f"fixed stride={stride_len}"
-    )
-
-    print(f"num_classes={num_classes}（背景1类 + 前景4类）")
+    print(f"num_classes={num_classes}（背景1类 + 前景{num_classes - 1}类）")
     print(
-        f"crop_size={crop_size}  "
-        f"mode={mode_label}  "
+        f"resize={crop_size}x{crop_size}  "
         f"confidence_threshold={confidence_threshold}"
     )
     print("=" * 70)
