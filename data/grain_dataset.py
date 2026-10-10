@@ -2,7 +2,7 @@
 datasets/grain_dataset.py
 
 金相晶界数据集
-适配 JLD 数据集：images=.jpg, masks=.png, mask像素0/1
+按同名文件匹配 PNG/BMP 等格式的掩码，保留原始类别像素值
 """
 import os
 import cv2
@@ -27,6 +27,12 @@ class GrainDataset(Dataset):
         ])
 
         self.has_mask = mask_dir is not None
+        if self.has_mask:
+            # 建立大小写无关索引，兼容 .BMP 等大写后缀。
+            self.mask_files = {
+                name.lower(): name for name in os.listdir(mask_dir)
+                if os.path.isfile(os.path.join(mask_dir, name))
+            }
 
     def __len__(self):
         return len(self.image_list)
@@ -43,14 +49,19 @@ class GrainDataset(Dataset):
         mask = None
 
         if self.has_mask:
-            # mask 统一为 .png，和原图后缀可能不同
+            # PNG 优先，其次原图同后缀，再尝试其他常见掩码格式。
             base_name = os.path.splitext(img_name)[0]
-            mask_name = base_name + ".png"
+            candidates = [base_name + ".png", img_name]
+            candidates.extend(base_name + ext for ext in
+                              (".bmp", ".jpg", ".jpeg", ".tif", ".tiff"))
+            mask_name = next((self.mask_files[name.lower()] for name in candidates
+                              if name.lower() in self.mask_files), None)
+            if mask_name is None:
+                raise RuntimeError(
+                    f"Mask not found for image {img_name} in {self.mask_dir}; "
+                    f"tried: {', '.join(dict.fromkeys(candidates))}"
+                )
             mask_path = os.path.join(self.mask_dir, mask_name)
-
-            if not os.path.exists(mask_path):
-                # fallback: 尝试同后缀
-                mask_path = os.path.join(self.mask_dir, img_name)
 
             mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
             if mask is None:

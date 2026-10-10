@@ -9,12 +9,11 @@ from pathlib import Path
 # ==========================================================
 
 # 原始数据路径
-images_dir = r"D:/lhb/datasets/JZW_v4/train_Z/JZW/total/JPEGImages/"
-masks_dir = r"D:/lhb/datasets/JZW_v4/train_Z/JZW/total/SegmentationClass/"
+images_dir = r"D:/lhb/datasets/SX/SX1009/JPEGImages/"
+masks_dir = r"D:/lhb/datasets/SX/SX1009/SegmentationClass/"
 
 # 输出数据集路径
-output_dir = r"D:/lhb/datasets/JZW_v4/train_Z/JZW/"
-
+output_dir = r"D:/lhb/datasets/SX/SX1009/"
 # 数据划分比例
 train_ratio = 0.8
 val_ratio = 0.2
@@ -139,7 +138,7 @@ def split_dataset():
     # --------------------------
 
     samples = []
-    mask_extensions = [".png", ".jpg", ".jpeg", ".tif", ".tiff"]
+    mask_extensions = [".png", ".jpg", ".jpeg", ".tif", ".tiff", ".BMP"]
 
     for img in images:
         mask_path = None

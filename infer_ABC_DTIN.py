@@ -31,7 +31,7 @@ INFER = {
     # "test_image_dir": "D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/2",
     # "test_image_dir": "D:/lhb/datasets/testsets/JZW/JZW_test/JZW_test",
     # "test_image_dir": "D:/lhb/datasets/testsets/JZW/LG-JZW-0827/TiN2LS74",
-    "test_image_dir": "D:/lhb/datasets/testsets/JZW/RZGT_0924/01",
+    "test_image_dir": "D:/lhb/datasets/testsets/JZW/DHTG_JZW-0828/0821A105",
 
     # ========== 条状模型（模型1，9类：A/B/C/HH/XW/XQL/TIN-B/TIN-C/TIN-D）==========
     "strip_checkpoint_dir":  "./checkpoints/JZW_ABC_4",
@@ -57,7 +57,7 @@ INFER = {
     # "output_dir": "D:/lhb/datasets/testsets/JZW/LG-JZW-0827/results/TiN2LS74/ABC_DTIN_3",
     # "output_dir": "D:/lhb/datasets/testsets/JZW/JZW_test/result_3/4_ABC_DTIN",
     # "output_dir": "D:/lhb/datasets/testsets/JZW/HQL_JZW_0810/result/2/4_ABC_DTIN",                 # 叠加结果输出目录
-    "output_dir": "D:/lhb/datasets/testsets/JZW/RZGT_0924/results/01/4_ABC_DTIN",                 # 叠加结果输出目录
+    "output_dir": "D:/lhb/datasets/testsets/JZW/DHTG_JZW-0828/results/0821A105/4_ABC_DTIN",          # 叠加结果输出目录
     "save_intermediate_masks": True,                        # 是否顺带保存 mask_strip/mask_point/mask_merged
     "output_mode": "overlay",                          # side_by_side(原图|叠加) / overlay(仅叠加)
 
