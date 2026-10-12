@@ -84,7 +84,7 @@ def statistics_labelme(json_dir, output_txt="label_statistics.txt"):
 
 if __name__ == "__main__":
     # 修改为你的Labelme标注目录
-    json_directory = r"D:/lhb/datasets/DBXH/DHTG0921/labeled"
+    json_directory = r"D:/lhb/datasets/AFe/total"
 
     # 输出日志名称
     output_log = "./tools/label_statistics_BGHQL.txt"

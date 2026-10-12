@@ -8,8 +8,8 @@ import numpy as np
 
 # ====================== 用户配置 ======================
 
-JSON_DIR = Path(r"D:\lhb\datasets\AFe\SGWC_AFe-0911\json")
-OUTPUT_DIR = Path(r"D:\lhb\datasets\AFe\SGWC_AFe-0911\SegmentationClass")
+JSON_DIR = Path(r"D:\lhb\datasets\AFe\total")
+OUTPUT_DIR = Path(r"D:\lhb\datasets\AFe\masks")
 
 RECURSIVE = False  # True：递归处理子目录
 

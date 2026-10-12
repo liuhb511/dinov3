@@ -56,8 +56,8 @@ TRAIN = {
     "boundary_weight": 0.2,             # Boundary Head 默认不启用
 
     # ========== 保存 / 日志 ==========
-    "save_dir":        "./checkpoints/AFe",
-    "log_dir":         "./logs/AFe",
+    "save_dir":        "./checkpoints/AFe_1",
+    "log_dir":         "./logs/AFe_1",
     "resume":          "",            # 断点续训 checkpoint 路径，空=不续训
     "save_best_iou":   True,
     "save_best_dice":  True,
